@@ -1,0 +1,25 @@
+{
+  "name": "rtmp",
+  "version": "0.0.0",
+  "dependencies": {
+    "clappr": "latest"
+  },
+  "devDependencies": {
+    "browserify": "^6.2.0",
+    "es6ify": "^1.2.0",
+    "gulp": "^3.8.6",
+    "gulp-minify-css": "^0.3.6",
+    "underscore" : "1.7.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-sass": "^0.7.2",
+    "vinyl-source-stream": "^1.0.0",
+    "yargs": "latest",
+    "glob": "^4.0.4",
+    "mkdirp": "^0.5.0",
+    "express": "^4.6.1",
+    "gulp-util": "latest",
+    "gulp-uglify": "^1.0.1",
+    "gulp-livereload": "^2.1.0",
+    "gulp-streamify": "0.0.5"
+  }
+}
