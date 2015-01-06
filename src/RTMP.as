@@ -4,6 +4,7 @@ package {
   import flash.system.Security;
   import flash.net.NetStream;
   import flash.events.*;
+  import flash.utils.setTimeout;
 
   import org.osmf.containers.MediaContainer;
   import org.osmf.elements.VideoElement;
@@ -40,13 +41,13 @@ package {
       mediaContainer = new MediaContainer();
       setupCallbacks();
       setupGetters();
-      ExternalInterface.call('console.log', 'clappr rtmp 0.6-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.7-alpha');
       _triggerEvent('flashready');
     }
 
     private function setupCallbacks():void {
-      ExternalInterface.addCallback("playerLoad", playerLoad);
       ExternalInterface.addCallback("playerPlay", playerPlay);
+      ExternalInterface.addCallback("playerResume", playerPlay);
       ExternalInterface.addCallback("playerPause", playerPause);
       ExternalInterface.addCallback("playerStop", playerStop);
       ExternalInterface.addCallback("playerSeek", playerSeek);
@@ -59,17 +60,6 @@ package {
       ExternalInterface.addCallback("getDuration", getDuration);
     }
 
-    private function playerLoad(url:String):void {
-      mediaElement = mediaFactory.createMediaElement(new URLResource(url));
-      mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
-      mediaPlayer = new MediaPlayer(mediaElement);
-      mediaPlayer.autoPlay = false;
-      mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
-      mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
-      mediaContainer.addMediaElement(mediaElement);
-      addChild(mediaContainer);
-    }
-
     private function onTraitAdd(event:MediaElementEvent):void {
       if (mediaElement.hasTrait(MediaTraitType.LOAD)) {
         netStreamLoadTrait = mediaElement.getTrait(MediaTraitType.LOAD) as NetStreamLoadTrait;
@@ -80,6 +70,7 @@ package {
     private function onLoaded(event:LoadEvent):void {
       netStream = netStreamLoadTrait.netStream;
       netStream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+      mediaPlayer.play();
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
@@ -88,8 +79,6 @@ package {
         playbackState = "PLAYING";
       } else if (isBuffering(event.info.code)) {
         playbackState = "PLAYING_BUFFERING";
-      } else if (event.info.code == "NetStream.Play.Stop") {
-        playbackState = "ENDED";
       } else if (event.info.code == "NetStream.Buffer.Empty") {
         playbackState = "BUFFERING";
       }
@@ -98,15 +87,31 @@ package {
 
     private function isBuffering(code:String):Boolean {
       return Boolean(code == "NetStream.Buffer.Empty" && playbackState != "ENDED" ||
-              code == "NetStream.SeekStart.Notify" ||
               code == "NetStream.Play.Start");
     }
 
-    private function playerPlay():void {
-      mediaPlayer.play();
+    private function playerPlay(url:String):void {
+      if (!mediaElement) {
+        ExternalInterface.call('console.log', 'player play, no mediaelement');
+        playbackState = "PLAYING_BUFFERING";
+        _triggerEvent('statechanged');
+        mediaElement = mediaFactory.createMediaElement(new URLResource(url));
+        mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+        mediaPlayer = new MediaPlayer(mediaElement);
+        mediaPlayer.autoPlay = false;
+        mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
+        mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
+        mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
+        mediaContainer.addMediaElement(mediaElement);
+        addChild(mediaContainer);
+      } else {
+        ExternalInterface.call('console.log', 'playing with media element');
+        mediaPlayer.play();
+      }
     }
 
     private function playerPause():void {
+      ExternalInterface.call('console.log', 'player pause');
       mediaPlayer.pause();
     }
 
@@ -137,6 +142,12 @@ package {
     private function onTimeUpdated(event:TimeEvent):void {
       _triggerEvent('progress');
       _triggerEvent('timeupdate');
+    }
+
+    private function onFinish(event:TimeEvent):void {
+      mediaPlayer.stop();
+      ExternalInterface.call('console.log', 'ended');
+      playbackState = 'ENDED';
     }
 
     private function _triggerEvent(name: String):void {

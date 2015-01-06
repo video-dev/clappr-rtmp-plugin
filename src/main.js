@@ -30,18 +30,9 @@ class RTMP extends Flash {
   }
 
   bootstrap() {
-    this.trigger(Events.PLAYBACK_READY, this.name)
-    this.el.playerLoad(this.options.src)
+    console.log("is ready")
     this.isReady = true
-  }
-
-  firstPlay() {
-    this.currentState = "PLAYING"
-    if (this.el.playerPlay) {
-      this.el.playerPlay()
-    } else {
-      this.listenToOnce(this, EVENTS.PLAYBACK_READY, this.firstPlay)
-    }
+    this.trigger(Events.PLAYBACK_READY, this.name)
   }
 
  render() {
