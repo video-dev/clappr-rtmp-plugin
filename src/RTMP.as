@@ -1,42 +1,45 @@
-package
-{
-	import flash.display.Sprite;
+package {
+  import flash.display.Sprite;
+  import flash.external.ExternalInterface;
 
-	import org.osmf.containers.MediaContainer;
-	import org.osmf.elements.VideoElement;
-	import org.osmf.media.DefaultMediaFactory;
-	import org.osmf.media.MediaElement;
-	import org.osmf.media.MediaPlayer;
-	import org.osmf.media.URLResource;
+  import org.osmf.containers.MediaContainer;
+  import org.osmf.elements.VideoElement;
+  import org.osmf.media.DefaultMediaFactory;
+  import org.osmf.media.MediaElement;
+  import org.osmf.media.MediaPlayer;
+  import org.osmf.media.URLResource;
 
-	[SWF( width="640", height="360" )]
-	public class RTMP extends Sprite
-	{
-		public function RTMP()
-		{
-			// Store the URL
-			var videoPath:String = "rtmp://cp67126.edgefcs.net/ondemand/mediapm/strobe/content/test/SpaceAloneHD_sounas_640_500_short";
+  [SWF(width="640", height="360")]
+  public class RTMP extends Sprite {
+    private var playbackId:String;
+    private var mediaFactory:DefaultMediaFactory;
+    private var mediaContainer:MediaContainer;
 
-			// Create a resource
-			var resource:URLResource = new URLResource( videoPath );
+    public function RTMP() {
+      playbackId = this.root.loaderInfo.parameters.playbackId;
+      mediaFactory = new DefaultMediaFactory();
+      mediaContainer = new MediaContainer();
 
-			// Create a mediafactory instance
-			var mediaFactory:DefaultMediaFactory = new DefaultMediaFactory();
+      setupCallbacks();
+      _triggerEvent('flashready');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.0-alpha');
+    }
 
-			// Create a MediaElement
-			//var element:VideoElement = new VideoElement( resource );
-			var element:MediaElement = mediaFactory.createMediaElement( resource );
+    private function setupCallbacks():void {
+      ExternalInterface.addCallback("playerPlay", play);
+    }
 
-			// Create a media player
-			var mediaPlayer:MediaPlayer = new MediaPlayer( element );
+    private function play(url:String):void {
+      ExternalInterface.call('console.log', 'playing ' + url);
+      var resource:URLResource = new URLResource(url);
+      var element:MediaElement = mediaFactory.createMediaElement(resource);
+      var mediaPlayer:MediaPlayer = new MediaPlayer(element);
+      mediaContainer.addMediaElement(element);
+      addChild(mediaContainer);
+    }
 
-			// Create a media container & add the MediaElement
-			var mediaContainer:MediaContainer = new MediaContainer();
-			mediaContainer.addMediaElement( element );
-
-			// Add the container to the display list
-			addChild( mediaContainer );
-
-		}
-	}
+    private function _triggerEvent(name: String):void {
+      ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+    }
+  }
 }
