@@ -1,6 +1,7 @@
 package {
   import flash.display.Sprite;
   import flash.external.ExternalInterface;
+  import flash.system.Security;
 
   import org.osmf.containers.MediaContainer;
   import org.osmf.elements.VideoElement;
@@ -16,6 +17,8 @@ package {
     private var mediaContainer:MediaContainer;
 
     public function RTMP() {
+      Security.allowDomain('*');
+      Security.allowInsecureDomain('*');
       playbackId = this.root.loaderInfo.parameters.playbackId;
       mediaFactory = new DefaultMediaFactory();
       mediaContainer = new MediaContainer();
