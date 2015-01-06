@@ -9,12 +9,15 @@ package {
   import org.osmf.media.MediaElement;
   import org.osmf.media.MediaPlayer;
   import org.osmf.media.URLResource;
+  import org.osmf.events.TimeEvent;
 
   [SWF(width="640", height="360")]
   public class RTMP extends Sprite {
     private var playbackId:String;
     private var mediaFactory:DefaultMediaFactory;
     private var mediaContainer:MediaContainer;
+    private var mediaPlayer:MediaPlayer;
+    private var element:MediaElement;
 
     public function RTMP() {
       Security.allowDomain('*');
@@ -24,21 +27,56 @@ package {
       mediaContainer = new MediaContainer();
 
       setupCallbacks();
+      ExternalInterface.call('console.log', 'clappr rtmp 0.2-alpha');
       _triggerEvent('flashready');
-      ExternalInterface.call('console.log', 'clappr rtmp 0.0-alpha');
     }
 
     private function setupCallbacks():void {
-      ExternalInterface.addCallback("playerPlay", play);
+      ExternalInterface.addCallback("playerLoad", playerLoad);
+      ExternalInterface.addCallback("playerPlay", playerPlay);
+      ExternalInterface.addCallback("playerPause", playerPause);
+      ExternalInterface.addCallback("playerStop", playerStop);
+      ExternalInterface.addCallback("playerSeek", playerSeek);
     }
 
-    private function play(url:String):void {
-      ExternalInterface.call('console.log', 'playing ' + url);
-      var resource:URLResource = new URLResource(url);
-      var element:MediaElement = mediaFactory.createMediaElement(resource);
-      var mediaPlayer:MediaPlayer = new MediaPlayer(element);
+    private function playerLoad(url:String):void {
+      element = mediaFactory.createMediaElement(new URLResource(url));
+      mediaPlayer = new MediaPlayer(element);
+      mediaPlayer.autoPlay = false;
+      mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
+      mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
       mediaContainer.addMediaElement(element);
       addChild(mediaContainer);
+      ExternalInterface.call('console.log', 'source loaded!');
+    }
+
+    private function playerPlay():void {
+      mediaPlayer.play();
+    }
+
+    private function playerPause():void {
+      mediaPlayer.pause();
+    }
+
+    private function playerSeek(seconds:Number):void {
+      mediaPlayer.seek(seconds);
+    }
+
+    private function playerStop():void {
+      mediaPlayer.stop();
+    }
+
+    private function onTimeUpdated(event:TimeEvent):void {
+      _triggerEvent('progress');
+      _triggerEvent('timeupdate');
+    }
+
+    private function getPosition():Number {
+      return mediaPlayer.currentTime;
+    }
+
+    private function getDuration():Number {
+      return mediaPlayer.duration;
     }
 
     private function _triggerEvent(name: String):void {
