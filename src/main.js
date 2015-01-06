@@ -24,11 +24,13 @@ class RTMP extends Flash {
 
   constructor(options) {
     super(options)
+    this.options = options
     this.swfPath = "assets/RTMP.swf"
   }
 
   bootstrap() {
     console.log("bootstrap called!")
+    this.el.playerLoad(this.options.src)
   }
 
   addListeners() {
@@ -43,6 +45,10 @@ class RTMP extends Flash {
     Mediator.off(this.uniqueId + ':timeupdate')
     Mediator.off(this.uniqueId + ':statechanged')
     Mediator.off(this.uniqueId + ':flashready')
+  }
+
+  play() {
+    this.el.playerPlay()
   }
 
   render() {
