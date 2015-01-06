@@ -40,7 +40,7 @@ package {
       mediaContainer = new MediaContainer();
       setupCallbacks();
       setupGetters();
-      ExternalInterface.call('console.log', 'clappr rtmp 0.4-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.6-alpha');
       _triggerEvent('flashready');
     }
 
@@ -50,6 +50,7 @@ package {
       ExternalInterface.addCallback("playerPause", playerPause);
       ExternalInterface.addCallback("playerStop", playerStop);
       ExternalInterface.addCallback("playerSeek", playerSeek);
+      ExternalInterface.addCallback("playerVolume", playerVolume);
     }
 
     private function setupGetters():void {
@@ -117,9 +118,12 @@ package {
       mediaPlayer.stop();
     }
 
-    private function onTimeUpdated(event:TimeEvent):void {
-      _triggerEvent('progress');
-      _triggerEvent('timeupdate');
+    private function playerVolume(level:Number):void {
+      mediaPlayer.volume = level;
+    }
+
+   private function getState():String {
+      return playbackState;
     }
 
     private function getPosition():Number {
@@ -130,12 +134,13 @@ package {
       return mediaPlayer.duration;
     }
 
-    private function _triggerEvent(name: String):void {
-      ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+    private function onTimeUpdated(event:TimeEvent):void {
+      _triggerEvent('progress');
+      _triggerEvent('timeupdate');
     }
 
-    private function getState():String {
-      return playbackState;
+    private function _triggerEvent(name: String):void {
+      ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
     }
   }
 }
