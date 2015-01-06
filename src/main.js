@@ -6,6 +6,7 @@ var Flash = require('flash')
 var JST = require('../jst')
 var Mediator = require('mediator')
 var Browser = require('browser')
+var Events = require('events')
 
 var objectIE = '<object type="application/x-shockwave-flash" id="<%= cid %>" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" data-flash-vod=""><param name="movie" value="<%= swfPath %>"> <param name="quality" value="autohigh"> <param name="swliveconnect" value="true"> <param name="allowScriptAccess" value="always"> <param name="bgcolor" value="#001122"> <param name="allowFullScreen" value="false"> <param name="wmode" value="gpu"> <param name="tabindex" value="1"> <param name=FlashVars value="playbackId=<%= playbackId %>" /> </object>'
 
@@ -29,15 +30,21 @@ class RTMP extends Flash {
   }
 
   bootstrap() {
-    console.log("bootstrap called!")
+    this.trigger(Events.PLAYBACK_READY, this.name)
     this.el.playerLoad(this.options.src)
+    this.isReady = true
   }
 
-  play() {
-    this.el.playerPlay()
+  firstPlay() {
+    this.currentState = "PLAYING"
+    if (this.el.playerPlay) {
+      this.el.playerPlay()
+    } else {
+      this.listenToOnce(this, EVENTS.PLAYBACK_READY, this.firstPlay)
+    }
   }
 
-  render() {
+ render() {
     this.$el.html(this.template({ cid: this.cid, swfPath: this.swfPath, playbackId: this.uniqueId }))
     if(Browser.isFirefox) {
       this.setupFirefox()
