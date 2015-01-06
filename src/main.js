@@ -33,20 +33,6 @@ class RTMP extends Flash {
     this.el.playerLoad(this.options.src)
   }
 
-  addListeners() {
-    Mediator.on(this.uniqueId + ':progress', this.progress, this)
-    Mediator.on(this.uniqueId + ':timeupdate', this.updateTime, this)
-    Mediator.on(this.uniqueId + ':statechanged', this.checkState, this)
-    Mediator.on(this.uniqueId + ':flashready', this.bootstrap, this)
-  }
-
-  stopListening() {
-    Mediator.off(this.uniqueId + ':progress')
-    Mediator.off(this.uniqueId + ':timeupdate')
-    Mediator.off(this.uniqueId + ':statechanged')
-    Mediator.off(this.uniqueId + ':flashready')
-  }
-
   play() {
     this.el.playerPlay()
   }
