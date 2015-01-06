@@ -119,7 +119,7 @@ package {
     }
 
     private function playerVolume(level:Number):void {
-      mediaPlayer.volume = level;
+      mediaPlayer.volume = level/100;
     }
 
    private function getState():String {
