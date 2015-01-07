@@ -2909,7 +2909,7 @@ var objectIE = '<object type="application/x-shockwave-flash" id="<%= cid %>" cla
 var RTMP = function RTMP(options) {
   $traceurRuntime.superConstructor($RTMP).call(this, options);
   this.options = options;
-  this.swfPath = "assets/RTMP.swf";
+  this.swfPath = "http://cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf";
   this.setupPlaybackType();
 };
 var $RTMP = RTMP;
@@ -2934,6 +2934,7 @@ var $RTMP = RTMP;
   bootstrap: function() {
     this.isReady = true;
     this.trigger(Events.PLAYBACK_READY, this.name);
+    this.options.autoPlay && this.play();
   },
   getPlaybackType: function() {
     return this.playbackType;
