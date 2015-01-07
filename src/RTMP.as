@@ -74,20 +74,16 @@ package {
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
-      ExternalInterface.call('console.log', 'new event:' + event.info.code);
-      if (event.info.code === "NetStream.Buffer.Full") {
+      ExternalInterface.call('console.log', '-> ' + event.info.code);
+      if (playbackState == "ENDED") {
+        return;
+      } else if (event.info.code == "NetStream.Buffer.Full") {
         playbackState = "PLAYING";
-      } else if (isBuffering(event.info.code)) {
+        _triggerEvent('statechanged');
+      } else if (event.info.code == "NetStream.Buffer.Empty" || event.info.code == "NetStream.Seek.Notify") {
         playbackState = "PLAYING_BUFFERING";
-      } else if (event.info.code == "NetStream.Buffer.Empty") {
-        playbackState = "BUFFERING";
+        _triggerEvent('statechanged');
       }
-      _triggerEvent('statechanged');
-    }
-
-    private function isBuffering(code:String):Boolean {
-      return Boolean(code == "NetStream.Buffer.Empty" && playbackState != "ENDED" ||
-              code == "NetStream.Play.Start");
     }
 
     private function playerPlay(url:String):void {
@@ -148,6 +144,7 @@ package {
       mediaPlayer.stop();
       ExternalInterface.call('console.log', 'ended');
       playbackState = 'ENDED';
+      _triggerEvent('statechanged');
     }
 
     private function _triggerEvent(name: String):void {
