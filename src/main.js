@@ -4,7 +4,6 @@
 
 var Flash = require('flash')
 var JST = require('../jst')
-var Mediator = require('mediator')
 var Browser = require('browser')
 var Events = require('events')
 
@@ -31,7 +30,6 @@ class RTMP extends Flash {
   }
 
   bootstrap() {
-    console.log("is ready")
     this.isReady = true
     this.trigger(Events.PLAYBACK_READY, this.name)
   }
@@ -43,9 +41,7 @@ class RTMP extends Flash {
   setupPlaybackType() {
     if (this.options.src.indexOf('live') > -1) {
       this.playbackType = 'live'
-      this.settings.left = ["playstop"]
-      this.settings.default = ['seekbar']
-      this.settings.right = ["fullscreen", "volume"]
+      this.settings = {'left': ["playstop"], 'default': ['seekbar'], 'right': ['fullscreen', 'volume']}
       this.settings.seekEnabled = false
       this.trigger(Events.PLAYBACK_SETTINGSUPDATE)
     } else {
