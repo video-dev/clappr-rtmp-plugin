@@ -41,7 +41,7 @@ package {
       mediaContainer = new MediaContainer();
       setupCallbacks();
       setupGetters();
-      ExternalInterface.call('console.log', 'clappr rtmp 0.7-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.8-alpha');
       _triggerEvent('flashready');
     }
 
@@ -74,7 +74,6 @@ package {
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
-      ExternalInterface.call('console.log', '-> ' + event.info.code);
       if (playbackState == "ENDED") {
         return;
       } else if (event.info.code == "NetStream.Buffer.Full") {
@@ -86,9 +85,8 @@ package {
       }
     }
 
-    private function playerPlay(url:String):void {
+    private function playerPlay(url:String=null):void {
       if (!mediaElement) {
-        ExternalInterface.call('console.log', 'player play, no mediaelement');
         playbackState = "PLAYING_BUFFERING";
         _triggerEvent('statechanged');
         mediaElement = mediaFactory.createMediaElement(new URLResource(url));
@@ -109,6 +107,7 @@ package {
     private function playerPause():void {
       ExternalInterface.call('console.log', 'player pause');
       mediaPlayer.pause();
+      playbackState = "PAUSED";
     }
 
     private function playerSeek(seconds:Number):void {
@@ -117,6 +116,7 @@ package {
 
     private function playerStop():void {
       mediaPlayer.stop();
+      playbackState = "IDLE";
     }
 
     private function playerVolume(level:Number):void {
@@ -142,7 +142,6 @@ package {
 
     private function onFinish(event:TimeEvent):void {
       mediaPlayer.stop();
-      ExternalInterface.call('console.log', 'ended');
       playbackState = 'ENDED';
       _triggerEvent('statechanged');
     }
