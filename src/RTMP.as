@@ -99,13 +99,11 @@ package {
         mediaContainer.addMediaElement(mediaElement);
         addChild(mediaContainer);
       } else {
-        ExternalInterface.call('console.log', 'playing with media element');
         mediaPlayer.play();
       }
     }
 
     private function playerPause():void {
-      ExternalInterface.call('console.log', 'player pause');
       mediaPlayer.pause();
       playbackState = "PAUSED";
     }
