@@ -25,13 +25,14 @@ class RTMP extends Flash {
   constructor(options) {
     super(options)
     this.options = options
-    this.swfPath = "assets/RTMP.swf"
+    this.swfPath = "http://flv.io/assets/RTMP.swf"
     this.setupPlaybackType()
   }
 
   bootstrap() {
     this.isReady = true
     this.trigger(Events.PLAYBACK_READY, this.name)
+    this.options.autoPlay && this.play()
   }
 
   getPlaybackType() {
