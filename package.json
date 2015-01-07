@@ -1,6 +1,24 @@
 {
-  "name": "rtmp",
-  "version": "0.0.0",
+  "name": "clappr-rtmp",
+  "version": "0.0.1",
+  "description": "RTMP Support for Clappr Player",
+  "main": "dist/rtmp.js",
+  "author": "Flávio Ribeiro",
+  "keywords": [
+    "rtmp",
+    "clappr",
+    "player",
+    "online video",
+    "streaming"
+  ],
+  "homepage": "http://clappr.io",
+  "bugs": {
+    "url": "http://github.com/flavioribeiro/clappr-rtmp-plugin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:flavioribeiro/clappr-rtmp-plugin.git"
+  },
   "dependencies": {
     "clappr": "latest"
   },
