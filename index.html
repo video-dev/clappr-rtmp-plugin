@@ -8,7 +8,8 @@
   <script type="text/javascript" charset="utf-8">
 window.onload = function() {
   var player = new Clappr.Player({
-    sources: ['rtmp://cp67126.edgefcs.net/ondemand/mediapm/strobe/content/test/SpaceAloneHD_sounas_640_500_short'],
+    source: 'rtmp://cp67126.edgefcs.net/ondemand/mediapm/strobe/content/test/SpaceAloneHD_sounas_640_500_short',
+//    source: 'rtmp://cdn.bem.tv:1935/live/soccer',
     plugins: {playback: [RTMP]},
     parentId: '#player-wrapper'
   });

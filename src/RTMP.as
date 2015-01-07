@@ -8,12 +8,14 @@ package {
 
   import org.osmf.containers.MediaContainer;
   import org.osmf.elements.VideoElement;
+
   import org.osmf.net.NetStreamLoadTrait;
+  import org.osmf.net.StreamingURLResource;
+  import org.osmf.net.StreamType;
 
   import org.osmf.media.DefaultMediaFactory;
   import org.osmf.media.MediaElement;
   import org.osmf.media.MediaPlayer;
-  import org.osmf.media.URLResource;
 
   import org.osmf.events.TimeEvent;
   import org.osmf.events.BufferEvent;
@@ -31,7 +33,9 @@ package {
     private var netStream:NetStream;
     private var mediaElement:MediaElement;
     private var netStreamLoadTrait:NetStreamLoadTrait;
+    private var urlResource:StreamingURLResource;
     private var playbackState:String = "IDLE";
+    private var isLive:Boolean = false;
 
     public function RTMP() {
       Security.allowDomain('*');
@@ -89,7 +93,13 @@ package {
       if (!mediaElement) {
         playbackState = "PLAYING_BUFFERING";
         _triggerEvent('statechanged');
-        mediaElement = mediaFactory.createMediaElement(new URLResource(url));
+        if (url.indexOf('live') == -1) {
+          urlResource = new StreamingURLResource(url, StreamType.RECORDED);
+        } else {
+          urlResource = new StreamingURLResource(url, StreamType.LIVE);
+          isLive = true;
+        }
+        mediaElement = mediaFactory.createMediaElement(urlResource);
         mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
         mediaPlayer = new MediaPlayer(mediaElement);
         mediaPlayer.autoPlay = false;
@@ -126,10 +136,12 @@ package {
     }
 
     private function getPosition():Number {
+      if (isLive) return 1;
       return mediaPlayer.currentTime;
     }
 
     private function getDuration():Number {
+      if (isLive) return 1;
       return mediaPlayer.duration;
     }
 

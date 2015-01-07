@@ -27,12 +27,30 @@ class RTMP extends Flash {
     super(options)
     this.options = options
     this.swfPath = "assets/RTMP.swf"
+    this.setupPlaybackType()
   }
 
   bootstrap() {
     console.log("is ready")
     this.isReady = true
     this.trigger(Events.PLAYBACK_READY, this.name)
+  }
+
+  getPlaybackType() {
+    return this.playbackType
+  }
+
+  setupPlaybackType() {
+    if (this.options.src.indexOf('live') > -1) {
+      this.playbackType = 'live'
+      this.settings.left = ["playstop"]
+      this.settings.default = ['seekbar']
+      this.settings.right = ["fullscreen", "volume"]
+      this.settings.seekEnabled = false
+      this.trigger(Events.PLAYBACK_SETTINGSUPDATE)
+    } else {
+      this.playbackType = 'vod'
+    }
   }
 
  render() {
