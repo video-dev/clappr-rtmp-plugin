@@ -15,8 +15,9 @@ and create Clappr Player adding the external plugin:
 
 ```javascript
 var player = new Clappr.Player({
-    source: "rtmp://source_here", 
-    parentId: "#player-wrapper", 
-    plugins: {'playback': [RTMP]});
+      source: "rtmp://source_here", 
+      parentId: "#player-wrapper", 
+      plugins: {'playback': [RTMP]}
+    );
 ```
 
