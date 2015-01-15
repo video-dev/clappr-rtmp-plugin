@@ -1,7 +1,7 @@
 clappr-rtmp-plugin
 ==================
 
-RTMP support for Clappr player
+RTMP support for [Clappr player](http://github.com/globocom/clappr)
 
 ## How to use
 
@@ -20,4 +20,6 @@ var player = new Clappr.Player({
       plugins: {'playback': [RTMP]}
     );
 ```
+
+Streams that has `live` on their URL will be handled as live streams. If not so, the plugin will play the source as VoD.
 
