@@ -2968,7 +2968,7 @@ var $RTMP = RTMP;
   }
 }, {}, Flash);
 RTMP.canPlay = function(source) {
-  return !!(source.indexOf('rtmp://') > -1);
+  return !!(source.indexOf('rtmp://') > -1 && Browser.hasFlash);
 };
 module.exports = window.RTMP = RTMP;
 
