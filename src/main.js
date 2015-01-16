@@ -62,7 +62,7 @@ class RTMP extends Flash {
 }
 
 RTMP.canPlay = function(source) {
-  return !!(source.indexOf('rtmp://') > -1)
+  return !!(source.indexOf('rtmp://') > -1 && Browser.hasFlash)
 };
 
 
