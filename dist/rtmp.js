@@ -2932,6 +2932,8 @@ var $RTMP = RTMP;
     };
   },
   bootstrap: function() {
+    this.el.width = '100%';
+    this.el.height = '100%';
     this.isReady = true;
     this.trigger(Events.PLAYBACK_READY, this.name);
     this.options.autoPlay && this.play();
