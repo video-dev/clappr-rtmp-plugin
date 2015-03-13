@@ -68,6 +68,7 @@ gulp.task('release', ['pre-build'], function() {
     .external('ui_container_plugin')
     .external('template')
     .external('mediator')
+    .external('flash')
     .bundle()
     .pipe(source('main.js'))
     .pipe(rename( 'rtmp.min.js'))
