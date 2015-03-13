@@ -24,10 +24,10 @@
   },
   "devDependencies": {
     "browserify": "^6.2.0",
-    "es6ify": "^1.2.0",
+    "babelify": "5.0.3",
     "gulp": "^3.8.6",
     "gulp-minify-css": "^0.3.6",
-    "underscore" : "1.7.0",
+    "lodash.template" : "3.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^0.7.2",
     "vinyl-source-stream": "^1.0.0",

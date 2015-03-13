@@ -6,6 +6,7 @@ var Flash = require('flash')
 var JST = require('../jst')
 var Browser = require('browser')
 var Events = require('events')
+var Mediator = Clappr.Mediator
 
 var objectIE = '<object type="application/x-shockwave-flash" id="<%= cid %>" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" data-flash-vod=""><param name="movie" value="<%= swfPath %>"> <param name="quality" value="autohigh"> <param name="swliveconnect" value="true"> <param name="allowScriptAccess" value="always"> <param name="bgcolor" value="#001122"> <param name="allowFullScreen" value="false"> <param name="wmode" value="gpu"> <param name="tabindex" value="1"> <param name=FlashVars value="playbackId=<%= playbackId %>" /> </object>'
 
@@ -27,6 +28,21 @@ class RTMP extends Flash {
     this.options = options
     this.swfPath = "http://cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf"
     this.setupPlaybackType()
+  }
+
+  addListeners() {
+    Mediator.on(this.uniqueId + ':progress', this.progress, this)
+    Mediator.on(this.uniqueId + ':timeupdate', this.updateTime, this)
+    Mediator.on(this.uniqueId + ':statechanged', this.checkState, this)
+    Mediator.on(this.uniqueId + ':flashready', this.bootstrap, this)
+  }
+
+  stopListening() {
+    super.stopListening()
+    Mediator.off(this.uniqueId + ':progress')
+    Mediator.off(this.uniqueId + ':timeupdate')
+    Mediator.off(this.uniqueId + ':statechanged')
+    Mediator.off(this.uniqueId + ':flashready')
   }
 
   bootstrap() {

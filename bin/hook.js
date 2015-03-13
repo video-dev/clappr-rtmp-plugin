@@ -6,9 +6,9 @@ var glob = require('glob').sync;
 var mkdirp = require('mkdirp').sync;
 var path = require('path');
 var fs = require('fs');
-var _ = require('underscore');
+var template = require('lodash.template');
 
-var codeTemplate = _.template(fs.readFileSync('bin/.hook_template').toString());
+var codeTemplate = template(fs.readFileSync('bin/.hook_template').toString());
 
 var jstFile = './jst.js';
 
