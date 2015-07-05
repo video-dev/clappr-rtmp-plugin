@@ -1,0 +1,8 @@
+[data-rtmp]{
+position:absolute;
+height:100%;
+width:100%;
+background-color:#000;
+display:block;
+pointer-events:none
+}
