@@ -23,3 +23,7 @@ var player = new Clappr.Player({
 
 Streams that has `live` on their URL will be handled as live streams. If not so, the plugin will play the source as VoD.
 
+## Additional configuration options
+**Flash wmode**
+
+ The wmode parameter of the flash player can be changed by providing a configuration option: `wmode: 'opaque'` in the player config. This does not affect IE's 'gpu' wmode default. Defaults to `transparent`.

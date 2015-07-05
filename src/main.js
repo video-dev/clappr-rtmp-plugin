@@ -27,6 +27,7 @@ class RTMP extends Flash {
     super(options)
     this.options = options
     this.swfPath = "http://cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf"
+    this.options.wmode = options.wmode || 'transparent' //Default to transparent wmode - IE always uses gpu as per objectIE 
     this.setupPlaybackType()
   }
 
@@ -69,7 +70,7 @@ class RTMP extends Flash {
   }
 
  render() {
-    this.$el.html(this.template({ cid: this.cid, swfPath: this.swfPath, playbackId: this.uniqueId }))
+    this.$el.html(this.template({ cid: this.cid, swfPath: this.swfPath, playbackId: this.uniqueId, wmode: this.options.wmode }))
     if(Browser.isFirefox) {
       this.setupFirefox()
     } else if (Browser.isLegacyIE) {
