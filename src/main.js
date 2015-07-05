@@ -26,8 +26,8 @@ class RTMP extends Flash {
   constructor(options) {
     super(options)
     this.options = options
-    this.swfPath = "http://cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf"
     this.options.wmode = options.wmode || 'transparent' //Default to transparent wmode - IE always uses gpu as per objectIE 
+    this.swfPath = this.options.swfPath?this.options.swfPath:"//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf"
     this.setupPlaybackType()
   }
 
