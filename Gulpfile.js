@@ -21,7 +21,7 @@ var files = {
 
 var watch_paths = {
   js: ['./*.js', './src/*.js'],
-  assets: './public/*.{html,scss,css}'
+  assets: './public/*.{html,scss,css,swf}'
 };
 
 gulp.task('pre-build', ['sass', 'copy-html', 'copy-css'], function(done) {
