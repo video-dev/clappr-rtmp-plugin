@@ -8,6 +8,13 @@ package {
 
   import org.osmf.containers.MediaContainer;
   import org.osmf.elements.VideoElement;
+  import org.osmf.display.ScaleMode;
+  import org.osmf.layout.LayoutMetadata;
+  import org.osmf.layout.LayoutMode;
+  import org.osmf.layout.HorizontalAlign;
+  import org.osmf.layout.VerticalAlign;
+  import flash.display.StageScaleMode;
+  import flash.display.StageAlign;
 
   import org.osmf.net.NetStreamLoadTrait;
   import org.osmf.net.StreamingURLResource;
@@ -29,6 +36,7 @@ package {
     private var playbackId:String;
     private var mediaFactory:DefaultMediaFactory;
     private var mediaContainer:MediaContainer;
+    private var videoElement:VideoElement;
     private var mediaPlayer:MediaPlayer;
     private var netStream:NetStream;
     private var mediaElement:MediaElement;
@@ -43,9 +51,22 @@ package {
       playbackId = this.root.loaderInfo.parameters.playbackId;
       mediaFactory = new DefaultMediaFactory();
       mediaContainer = new MediaContainer();
+
+      //set mediaContainer layout
+	  mediaContainer.clipChildren = true;
+	  mediaContainer.layoutMetadata.percentWidth = 100;
+	  mediaContainer.layoutMetadata.percentHeight = 100;
+	  mediaContainer.width = stage.stageWidth;
+	  mediaContainer.height = stage.stageHeight;
+
+	  stage.align = StageAlign.TOP;
+	  stage.scaleMode = StageScaleMode.NO_SCALE; //We handle scaling ourselves
+
+	  stage.addEventListener(Event.RESIZE, _onStageResize);
+
       setupCallbacks();
       setupGetters();
-      ExternalInterface.call('console.log', 'clappr rtmp 0.8-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.9-alpha');
       _triggerEvent('flashready');
     }
 
@@ -56,6 +77,7 @@ package {
       ExternalInterface.addCallback("playerStop", playerStop);
       ExternalInterface.addCallback("playerSeek", playerSeek);
       ExternalInterface.addCallback("playerVolume", playerVolume);
+      ExternalInterface.addCallback("playerScaling", playerScaling);
     }
 
     private function setupGetters():void {
@@ -99,14 +121,29 @@ package {
           urlResource = new StreamingURLResource(url, StreamType.LIVE);
           isLive = true;
         }
-        mediaElement = mediaFactory.createMediaElement(urlResource);
-        mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
-        mediaPlayer = new MediaPlayer(mediaElement);
+
+        //create new VideoElement - it contains all the informations about the video
+		videoElement = new VideoElement(urlResource);
+		
+		//if we want to have nicely smoothed and scaled video, just turn smoothing property on.
+		videoElement.smoothing = true;
+
+		//create new MediaPlayer - it controls your media provided in media property
+		mediaPlayer = new MediaPlayer();
+
+		mediaPlayer.media = videoElement;
+
         mediaPlayer.autoPlay = false;
         mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
-        mediaContainer.addMediaElement(mediaElement);
+
+        mediaElement = mediaContainer.addMediaElement(videoElement);
+        mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+
+        //Set the player scaling
+        playerScaling(this.root.loaderInfo.parameters.scaling);
+
         addChild(mediaContainer);
       } else {
         mediaPlayer.play();
@@ -131,7 +168,39 @@ package {
       mediaPlayer.volume = level/100;
     }
 
-   private function getState():String {
+    private function playerScaling(scaling: String):void {
+      if(!mediaElement) return;
+      //layoutMetadata needs to be added to the mediaElement depicting what scaling the video should have
+      var layoutMetadata:LayoutMetadata = new LayoutMetadata();
+      layoutMetadata.percentWidth = 100;
+      layoutMetadata.percentHeight = 100;
+      //The following is required for correct alignment in letterbox scaling
+      layoutMetadata.layoutMode = LayoutMode.HORIZONTAL
+      layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+      layoutMetadata.verticalAlign = VerticalAlign.TOP;
+	  
+	  switch(scaling){
+	  	case 'stretch':
+	  	  layoutMetadata.scaleMode = ScaleMode.STRETCH;
+	  	  break;
+	  	case 'zoom':
+	  	  layoutMetadata.scaleMode = ScaleMode.ZOOM;
+	  	  break;
+	  	case 'none':
+	  	  layoutMetadata.scaleMode = ScaleMode.NONE;
+	  	  break;
+	  	//Letterbox is the default scale mode
+	  	case 'letterbox':
+	  	default:
+	  	  layoutMetadata.scaleMode = ScaleMode.LETTERBOX;
+	  	  break;
+	  }
+
+	  //Assign layoutMetadata to mediaElement
+	  mediaElement.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
+    }
+
+    private function getState():String {
       return playbackState;
     }
 
@@ -154,6 +223,11 @@ package {
       mediaPlayer.stop();
       playbackState = 'ENDED';
       _triggerEvent('statechanged');
+    }
+
+    protected function _onStageResize(event : Event) : void {
+      mediaContainer.width = stage.stageWidth;
+	  mediaContainer.height = stage.stageHeight;
     }
 
     private function _triggerEvent(name: String):void {
