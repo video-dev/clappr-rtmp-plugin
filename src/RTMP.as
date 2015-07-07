@@ -56,10 +56,8 @@ package {
 	  mediaContainer.clipChildren = true;
 	  mediaContainer.layoutMetadata.percentWidth = 100;
 	  mediaContainer.layoutMetadata.percentHeight = 100;
-	  mediaContainer.width = stage.stageWidth;
-	  mediaContainer.height = stage.stageHeight;
 
-	  stage.align = StageAlign.TOP;
+	  stage.align = StageAlign.TOP_LEFT;
 	  stage.scaleMode = StageScaleMode.NO_SCALE; //We handle scaling ourselves
 
 	  stage.addEventListener(Event.RESIZE, _onStageResize);
@@ -141,6 +139,9 @@ package {
         mediaElement = mediaContainer.addMediaElement(videoElement);
         mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
 
+        mediaContainer.width = stage.stageWidth;
+	  	mediaContainer.height = stage.stageHeight;
+
         //Set the player scaling
         playerScaling(this.root.loaderInfo.parameters.scaling);
 
@@ -174,10 +175,11 @@ package {
       var layoutMetadata:LayoutMetadata = new LayoutMetadata();
       layoutMetadata.percentWidth = 100;
       layoutMetadata.percentHeight = 100;
+
       //The following is required for correct alignment in letterbox scaling
       layoutMetadata.layoutMode = LayoutMode.HORIZONTAL
       layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-      layoutMetadata.verticalAlign = VerticalAlign.TOP;
+      layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 	  
 	  switch(scaling){
 	  	case 'stretch':
