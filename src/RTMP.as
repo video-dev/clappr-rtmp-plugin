@@ -5,6 +5,8 @@ package {
   import flash.net.NetStream;
   import flash.events.*;
   import flash.utils.setTimeout;
+  import flash.display.StageAlign;
+  import flash.display.StageScaleMode;
 
   import org.osmf.containers.MediaContainer;
   import org.osmf.elements.VideoElement;
@@ -16,6 +18,13 @@ package {
   import org.osmf.media.DefaultMediaFactory;
   import org.osmf.media.MediaElement;
   import org.osmf.media.MediaPlayer;
+
+  import org.osmf.layout.LayoutMetadata;
+  import org.osmf.layout.LayoutMode;
+  import org.osmf.layout.LayoutMode;
+  import org.osmf.layout.HorizontalAlign;
+  import org.osmf.layout.VerticalAlign;
+  import org.osmf.layout.ScaleMode;
 
   import org.osmf.events.TimeEvent;
   import org.osmf.events.BufferEvent;
@@ -45,8 +54,25 @@ package {
       mediaContainer = new MediaContainer();
       setupCallbacks();
       setupGetters();
-      ExternalInterface.call('console.log', 'clappr rtmp 0.8-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.9-alpha');
       _triggerEvent('flashready');
+      stage.scaleMode = StageScaleMode.NO_SCALE;
+      stage.align = StageAlign.TOP_LEFT;
+      if(stage){
+        resize();
+      }else {
+        addEventListener(Event.ADDED_TO_STAGE, resize);
+      }
+      stage.addEventListener(Event.RESIZE, resize);
+
+    }
+
+    private function resize(e:Event = null):void {
+      if(mediaElement && mediaContainer && stage){
+        mediaContainer.width = stage.stageWidth;
+        mediaContainer.height = stage.stageHeight;
+        setScaleMode(mediaElement, stage.stageWidth, stage.stageHeight);
+      }
     }
 
     private function setupCallbacks():void {
@@ -89,6 +115,19 @@ package {
       }
     }
 
+    private function setScaleMode(mediaElement:MediaElement, width:Number, height:Number):void {
+      var layout:LayoutMetadata = new LayoutMetadata();
+      layout.width  = width;
+      layout.height = height;
+      layout.layoutMode = LayoutMode.HORIZONTAL;
+      layout.horizontalAlign = HorizontalAlign.CENTER;
+      layout.verticalAlign = VerticalAlign.TOP;
+      layout.scaleMode = ScaleMode.LETTERBOX;
+
+      mediaElement.removeMetadata(LayoutMetadata.LAYOUT_NAMESPACE);
+      mediaElement.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layout);
+    }
+
     private function playerPlay(url:String=null):void {
       if (!mediaElement) {
         playbackState = "PLAYING_BUFFERING";
@@ -99,8 +138,10 @@ package {
           urlResource = new StreamingURLResource(url, StreamType.LIVE);
           isLive = true;
         }
+
         mediaElement = mediaFactory.createMediaElement(urlResource);
         mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+
         mediaPlayer = new MediaPlayer(mediaElement);
         mediaPlayer.autoPlay = false;
         mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
@@ -108,6 +149,7 @@ package {
         mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
         mediaContainer.addMediaElement(mediaElement);
         addChild(mediaContainer);
+        resize();
       } else {
         mediaPlayer.play();
       }
