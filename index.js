@@ -1,1 +1,2 @@
-module.exports = require('./src/main')
+import RTMP from './src/main'
+module.exports = window.RTMP = RTMP;
