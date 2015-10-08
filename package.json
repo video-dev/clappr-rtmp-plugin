@@ -1,6 +1,6 @@
 {
   "name": "clappr-rtmp",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "RTMP Support for Clappr Player",
   "main": "dist/rtmp.js",
   "author": "Flávio Ribeiro",
@@ -19,25 +19,17 @@
     "type": "git",
     "url": "git@github.com:flavioribeiro/clappr-rtmp-plugin.git"
   },
+  "scripts": {
+    "release": "node_modules/webpack/bin/webpack.js --progress -d -p --optimize-minimize --optimize-dedupe --output-filename rtmp.min.js",
+    "build": "node_modules/webpack/bin/webpack.js"
+  },
   "dependencies": {
     "clappr": "latest"
   },
   "devDependencies": {
-    "browserify": "^6.2.0",
-    "babelify": "5.0.3",
-    "gulp": "^3.8.6",
-    "gulp-minify-css": "^0.3.6",
-    "lodash.template" : "3.0.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-sass": "^0.7.2",
-    "vinyl-source-stream": "^1.0.0",
-    "yargs": "latest",
-    "glob": "^4.0.4",
-    "mkdirp": "^0.5.0",
-    "express": "^4.6.1",
-    "gulp-util": "latest",
-    "gulp-uglify": "^1.0.1",
-    "gulp-livereload": "^2.1.0",
-    "gulp-streamify": "0.0.5"
+    "babel-core": "^5.8.25",
+    "babel-loader": "^5.3.2",
+    "transfer-webpack-plugin": "^0.1.4",
+    "webpack": "^1.12.2"
   }
 }
