@@ -1,0 +1,27 @@
+<param name="movie" value="<%= swfPath %>?inline=1">
+<param name="quality" value="autohigh">
+<param name="swliveconnect" value="true">
+<param name="allowScriptAccess" value="always">
+<param name="bgcolor" value="#000000">
+<param name="allowFullScreen" value="false">
+<param name="wmode" value="<%= wmode %>">
+<param name="tabindex" value="1">
+<param name=FlashVars value="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>" />
+<embed
+  name="<%= cid %>"
+  type="application/x-shockwave-flash"
+  disabled="disabled"
+  tabindex="-1"
+  enablecontextmenu="false"
+  allowScriptAccess="always"
+  quality="autohigh"
+  pluginspage="http://www.macromedia.com/go/getflashplayer"
+  wmode="<%= wmode %>"
+  swliveconnect="true"
+  allowfullscreen="false"
+  bgcolor="#000000"
+  FlashVars="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>"
+  src="<%= swfPath %>"
+  width="100%"
+  height="100%">
+</embed>
