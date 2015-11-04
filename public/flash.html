@@ -2,11 +2,12 @@
 <param name="quality" value="autohigh">
 <param name="swliveconnect" value="true">
 <param name="allowScriptAccess" value="always">
+<param name="allownetworking" value="all">
 <param name="bgcolor" value="#000000">
 <param name="allowFullScreen" value="false">
 <param name="wmode" value="<%= wmode %>">
 <param name="tabindex" value="1">
-<param name=FlashVars value="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>" />
+<param name=FlashVars value="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>&startLevel=<%= startLevel %>" />
 <embed
   name="<%= cid %>"
   type="application/x-shockwave-flash"
@@ -14,13 +15,14 @@
   tabindex="-1"
   enablecontextmenu="false"
   allowScriptAccess="always"
+  allownetworking="all"
   quality="autohigh"
   pluginspage="http://www.macromedia.com/go/getflashplayer"
   wmode="<%= wmode %>"
   swliveconnect="true"
   allowfullscreen="false"
   bgcolor="#000000"
-  FlashVars="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>"
+  FlashVars="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>&startLevel=<%= startLevel %>"
   src="<%= swfPath %>"
   width="100%"
   height="100%">

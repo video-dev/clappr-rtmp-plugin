@@ -20,17 +20,23 @@ package {
   import org.osmf.net.NetStreamLoadTrait;
   import org.osmf.net.StreamingURLResource;
   import org.osmf.net.StreamType;
+  import org.osmf.metadata.MetadataNamespaces
 
-  import org.osmf.media.DefaultMediaFactory;
-  import org.osmf.media.MediaElement;
-  import org.osmf.media.MediaPlayer;
+  import org.osmf.logging.Log;
 
-  import org.osmf.events.TimeEvent;
-  import org.osmf.events.BufferEvent;
-  import org.osmf.events.MediaElementEvent;
-  import org.osmf.events.LoadEvent;
+  import org.osmf.media.*;
+  import org.osmf.events.*;
 
   import org.osmf.traits.MediaTraitType;
+
+  import org.osmf.smil.SMILPluginInfo;
+
+  CONFIG::LOGGING {
+    import logging.ExternalLoggerFactory;
+    import org.osmf.logging.Logger;
+    import org.osmf.logging.Log;
+  }
+
 
   [SWF(width="640", height="360")]
   public class RTMP extends Sprite {
@@ -45,6 +51,17 @@ package {
     private var urlResource:StreamingURLResource;
     private var playbackState:String = "IDLE";
     private var isLive:Boolean = false;
+
+    CONFIG::LOGGING {
+      private static const logInit:Boolean = initLog();
+      private static const logger:Logger = org.osmf.logging.Log.getLogger("RTMP");
+
+      private static function initLog():Boolean {
+        Log.loggerFactory = new ExternalLoggerFactory();
+        return true;
+      }
+    }
+
 
     public function RTMP() {
       Security.allowDomain('*');
@@ -69,7 +86,9 @@ package {
 
       setupCallbacks();
       setupGetters();
+
       ExternalInterface.call('console.log', 'clappr rtmp 0.9-alpha');
+
       _triggerEvent('flashready');
 
       stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -100,12 +119,17 @@ package {
       ExternalInterface.addCallback("playerSeek", playerSeek);
       ExternalInterface.addCallback("playerVolume", playerVolume);
       ExternalInterface.addCallback("playerScaling", playerScaling);
+      ExternalInterface.addCallback("setLevel", setLevel);
+      ExternalInterface.addCallback("setAutoSwitchLevels", setAutoSwitchLevels);
     }
 
     private function setupGetters():void {
       ExternalInterface.addCallback("getState", getState);
       ExternalInterface.addCallback("getPosition", getPosition);
       ExternalInterface.addCallback("getDuration", getDuration);
+      ExternalInterface.addCallback("getCurrentLevel", getCurrentLevel);
+      ExternalInterface.addCallback("isDynamicStream", isDynamicStream);
+      ExternalInterface.addCallback("isAutoSwitchLevels", isAutoSwitchLevels);
     }
 
     private function onTraitAdd(event:MediaElementEvent):void {
@@ -117,7 +141,6 @@ package {
 
     private function onLoaded(event:LoadEvent):void {
       netStream = netStreamLoadTrait.netStream;
-      netStream.bufferTime = this.root.loaderInfo.parameters.bufferTime;
       netStream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
       mediaPlayer.play();
     }
@@ -151,28 +174,37 @@ package {
       if (!mediaElement) {
         playbackState = "PLAYING_BUFFERING";
         _triggerEvent('statechanged');
+
         if (isLive) {
           urlResource = new StreamingURLResource(url, StreamType.LIVE);
         } else {
           urlResource = new StreamingURLResource(url, StreamType.RECORDED);
         }
 
-        //create new VideoElement - it contains all the informations about the video
-        videoElement = new VideoElement(urlResource);
+        var sl1:int = int(this.root.loaderInfo.parameters.startLevel);
+        urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX, sl1);
 
-        //if we want to have nicely smoothed and scaled video, just turn smoothing property on.
-        videoElement.smoothing = true;
+        var pluginResource:MediaResourceBase = new PluginInfoResource(new SMILPluginInfo());
+
+        // Load the plugin.
+        mediaFactory.loadPlugin(pluginResource);
 
         //create new MediaPlayer - it controls your media provided in media property
         mediaPlayer = new MediaPlayer();
 
-        mediaPlayer.media = videoElement;
+        mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
         mediaPlayer.autoPlay = false;
         mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
-        mediaElement = mediaContainer.addMediaElement(videoElement);
+        mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+
+        mediaElement = mediaFactory.createMediaElement(urlResource);
         mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+
+        mediaContainer.addMediaElement(mediaElement);
+
+        mediaPlayer.media = mediaElement;
 
         //Set the player scaling
         playerScaling(this.root.loaderInfo.parameters.scaling);
@@ -184,8 +216,14 @@ package {
       }
     }
 
+    private function onMediaError(event:MediaErrorEvent):void {
+      debugLog("MediaPlayer error: " + event.toString());
+    }
+
     private function playerPause():void {
       mediaPlayer.pause();
+
+      debugLog("pausing playback");
       playbackState = "PAUSED";
     }
 
@@ -236,6 +274,15 @@ package {
       mediaElement.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
     }
 
+    private function setLevel(level:int):void {
+      mediaPlayer.autoDynamicStreamSwitch = false;
+      mediaPlayer.switchDynamicStreamIndex(level);
+    }
+
+    private function setAutoSwitchLevels(auto:Boolean):void {
+      mediaPlayer.autoDynamicStreamSwitch = auto;
+    }
+
     private function getState():String {
       return playbackState;
     }
@@ -248,6 +295,18 @@ package {
     private function getDuration():Number {
       if (isLive) return 1;
       return mediaPlayer.duration;
+    }
+
+    private function getCurrentLevel():Number {
+      return mediaPlayer.currentDynamicStreamIndex;
+    }
+
+    private function isDynamicStream():Boolean {
+      return mediaPlayer.isDynamicStream;
+    }
+
+    private function isAutoSwitchLevels():Boolean {
+      return mediaPlayer.autoDynamicStreamSwitch;
     }
 
     private function onTimeUpdated(event:TimeEvent):void {
@@ -268,6 +327,14 @@ package {
 
     private function _triggerEvent(name: String):void {
       ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+    }
+
+    private function debugLog(msg:String):void {
+      CONFIG::LOGGING {
+        if (logger != null) {
+          logger.info(msg);
+        }
+      }
     }
   }
 }
