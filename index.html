@@ -8,61 +8,20 @@
       <div id="player"></div>
       <script>
         var player = new Clappr.Player({
+            source: "rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/8Juv1MVa-485.mp4",
             parentId: "#player",
             autoPlay: true,
-            swfPath: 'dist/assets/RTMP.swf',
-            scaling:'stretch',
-            playbackType: 'live',
-            source: "",
-            plugins: {
-                playback: [Clappr.FlasHLS, RTMP]
+            rtmpConfig: {
+                swfPath: 'dist/assets/RTMP.swf',
+                scaling:'stretch',
+                playbackType: 'vod',
+                bufferTime: 1,
+                startLevel: 0
             },
-            hlsjsConfig: {
-              debug : true,
-              autoStartLoad : true,
-              maxBufferLength : 30,
-              maxBufferSize : 60*1000*1000,
-              liveSyncDurationCount: 3,
-              liveMaxLatencyDurationCount: 10,
-              enableWorker : true,
-              fragLoadingTimeOut : 20000,
-              fragLoadingMaxRetry : 6,
-              fragLoadingRetryDelay : 500,
-              manifestLoadingTimeOut : 10000,
-              manifestLoadingMaxRetry : 6,
-              manifestLoadingRetryDelay : 500,
-              fpsDroppedMonitoringPeriod : 5000,
-              fpsDroppedMonitoringThreshold : 0.9,
-              startLevel: 2,
-              appendErrorMaxRetry : 200
-            }
+            plugins: {
+                playback: [RTMP]
+            },
         });
-
-        // player.on(Clappr.Events.PLAYER_PLAY , function() {
-        //     console.log(10);
-        // });
-
-        // player.core.mediaControl.container.playback.on(Clappr.Events.PLAYBACK_ENDED, function() {
-        //     console.log(1);
-        // });
-
-        // player.core.mediaControl.container.playback.on(Clappr.Events.PLAYBACK_ERROR, function() {
-        //     console.log(2);
-        // });
-
-        // player.core.mediaControl.container.playback.on(Clappr.Events.PLAYBACK_BUFFERING, function() {
-        //     console.log(3);
-        // });
-
-        // player.on(Clappr.Events.PLAYER_ENDED, function() {
-        //     console.log(11);
-        // });
-
-        // player.on(Clappr.Events.PLAYER_ERROR, function() {
-        //     console.log(12);
-        // });
-
-        window.player = player;
       </script>
     </body>
 </html>
