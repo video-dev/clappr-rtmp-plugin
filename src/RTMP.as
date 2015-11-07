@@ -87,7 +87,7 @@ package {
       setupCallbacks();
       setupGetters();
 
-      ExternalInterface.call('console.log', 'clappr rtmp 0.9-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.10-alpha');
 
       _triggerEvent('flashready');
 
@@ -163,7 +163,7 @@ package {
       layout.height = height;
       layout.layoutMode = LayoutMode.HORIZONTAL;
       layout.horizontalAlign = HorizontalAlign.CENTER;
-      layout.verticalAlign = VerticalAlign.TOP;
+      layout.verticalAlign = VerticalAlign.MIDDLE;
       layout.scaleMode = ScaleMode.LETTERBOX;
 
       mediaElement.removeMetadata(LayoutMetadata.LAYOUT_NAMESPACE);
