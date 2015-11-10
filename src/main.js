@@ -48,6 +48,11 @@ export default class RTMP extends Flash {
         return this.el.getCurrentLevel();
     }
 
+    get numLevels() {
+        return this.el.getNumLevels();
+    }
+
+
     set currentLevel(level) {
         this.el.setLevel(level);
     }
@@ -56,8 +61,19 @@ export default class RTMP extends Flash {
         return this.el.isAutoSwitchLevels();
     }
 
-    set autoSwitchLevels(auto) {
-        this.el.setAutoSwitchLevels(auto);
+    get levels() {
+        var levels = [];
+
+        for (var i = 0; i < this.numLevels; i++) {
+            var bitrate = this.el.getBitrateForLevel(i);
+
+            levels.push({
+                bitrate: bitrate * 1000, // KBytes to Bytes
+                label: bitrate
+            });
+        }
+
+        return levels;
     }
 
     get isDynamicStream() {
@@ -68,6 +84,7 @@ export default class RTMP extends Flash {
         Mediator.on(this.uniqueId + ':progress', this.progress, this)
         Mediator.on(this.uniqueId + ':timeupdate', this.updateTime, this)
         Mediator.on(this.uniqueId + ':statechanged', this.checkState, this)
+        Mediator.on(this.uniqueId + ':levelChanged', this.levelChange, this)
         Mediator.on(this.uniqueId + ':flashready', this.bootstrap, this)
     }
 
@@ -95,6 +112,18 @@ export default class RTMP extends Flash {
         }
     }
 
+    levelChange() {
+        var data = {level: this.currentLevel}
+        this.trigger(Events.PLAYBACK_LEVEL_SWITCH, data)
+        var currentLevel = this.levels[data.level]
+        if (currentLevel) {
+            this.trigger(Events.PLAYBACK_BITRATE, {
+                bitrate: currentLevel.bitrate,
+                level: data.level
+            })
+        }
+    }
+
     setupPlaybackType() {
         if (this.getPlaybackType() === 'live') {
             this.settings = {'left': ["playpause"], 'default': ['seekbar'], 'right': ['fullscreen', 'volume']}
@@ -118,6 +147,14 @@ export default class RTMP extends Flash {
         var style = Styler.getStyleFor(flashStyle)
         this.$el.append(style)
         return this
+    }
+
+    checkState() {
+        super.checkState()
+
+        if (this.isDynamicStream) {
+            this.trigger(Events.PLAYBACK_FRAGMENT_LOADED)
+        }
     }
 }
 

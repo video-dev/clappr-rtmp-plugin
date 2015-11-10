@@ -87,7 +87,7 @@ package {
       setupCallbacks();
       setupGetters();
 
-      ExternalInterface.call('console.log', 'clappr rtmp 0.10-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.10.2-alpha');
 
       _triggerEvent('flashready');
 
@@ -120,7 +120,6 @@ package {
       ExternalInterface.addCallback("playerVolume", playerVolume);
       ExternalInterface.addCallback("playerScaling", playerScaling);
       ExternalInterface.addCallback("setLevel", setLevel);
-      ExternalInterface.addCallback("setAutoSwitchLevels", setAutoSwitchLevels);
     }
 
     private function setupGetters():void {
@@ -128,6 +127,8 @@ package {
       ExternalInterface.addCallback("getPosition", getPosition);
       ExternalInterface.addCallback("getDuration", getDuration);
       ExternalInterface.addCallback("getCurrentLevel", getCurrentLevel);
+      ExternalInterface.addCallback("getNumLevels", getNumLevels);
+      ExternalInterface.addCallback("getBitrateForLevel", getBitrateForLevel);
       ExternalInterface.addCallback("isDynamicStream", isDynamicStream);
       ExternalInterface.addCallback("isAutoSwitchLevels", isAutoSwitchLevels);
     }
@@ -198,6 +199,7 @@ package {
         mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
         mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+        mediaPlayer.addEventListener(DynamicStreamEvent.SWITCHING_CHANGE, onLevelSwitching);
 
         mediaElement = mediaFactory.createMediaElement(urlResource);
         mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
@@ -213,6 +215,12 @@ package {
         resize();
       } else {
         mediaPlayer.play();
+      }
+    }
+
+    private function onLevelSwitching(event:DynamicStreamEvent):void {
+      if (!event.switching) {
+        _triggerEvent("levelChanged");
       }
     }
 
@@ -275,12 +283,13 @@ package {
     }
 
     private function setLevel(level:int):void {
-      mediaPlayer.autoDynamicStreamSwitch = false;
-      mediaPlayer.switchDynamicStreamIndex(level);
-    }
-
-    private function setAutoSwitchLevels(auto:Boolean):void {
-      mediaPlayer.autoDynamicStreamSwitch = auto;
+      if (level == -1) {
+        mediaPlayer.autoDynamicStreamSwitch = true;
+      }
+      else {
+        mediaPlayer.autoDynamicStreamSwitch = false;
+        mediaPlayer.switchDynamicStreamIndex(level);
+      }
     }
 
     private function getState():String {
@@ -299,6 +308,14 @@ package {
 
     private function getCurrentLevel():Number {
       return mediaPlayer.currentDynamicStreamIndex;
+    }
+
+    private function getNumLevels():Number {
+      return mediaPlayer.numDynamicStreams;
+    }
+
+    private function getBitrateForLevel(i:Number):Number {
+      return mediaPlayer.getBitrateForDynamicStreamIndex(i);
     }
 
     private function isDynamicStream():Boolean {
