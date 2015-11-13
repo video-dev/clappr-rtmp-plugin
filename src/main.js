@@ -28,9 +28,11 @@ export default class RTMP extends Flash {
     constructor(options) {
         super(options)
         this.options = options
-        this.options.rtmpConfig.wmode = options.rtmpConfig.wmode || 'transparent' // Default to transparent wmode - IE always uses gpu as per objectIE
-        this.options.rtmpConfig.bufferTime = options.rtmpConfig.bufferTime || 0.1
-        this.options.rtmpConfig.scaling = options.rtmpConfig.scaling || 'letterbox'
+        this.options.rtmpConfig = this.options.rtmpConfig || {}
+        this.options.rtmpConfig.swfPath = this.options.rtmpConfig.swfPath || '//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf'
+        this.options.rtmpConfig.wmode = this.options.rtmpConfig.wmode || 'transparent' // Default to transparent wmode - IE always uses gpu as per objectIE
+        this.options.rtmpConfig.bufferTime = this.options.rtmpConfig.bufferTime || 0.1
+        this.options.rtmpConfig.scaling = this.options.rtmpConfig.scaling || 'letterbox'
         this.options.rtmpConfig.playbackType = this.options.rtmpConfig.playbackType || this.options.src.indexOf('live') > -1
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel || 0
         this.setupPlaybackType()
@@ -41,7 +43,7 @@ export default class RTMP extends Flash {
     }
 
     get swfPath() {
-        return this.options.rtmpConfig.swfPath ? this.options.rtmpConfig.swfPath : "//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf"
+        return this.options.rtmpConfig.swfPath
     }
 
     get currentLevel() {

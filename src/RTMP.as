@@ -87,7 +87,7 @@ package {
       setupCallbacks();
       setupGetters();
 
-      ExternalInterface.call('console.log', 'clappr rtmp 0.10.2-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.10.3-alpha');
 
       _triggerEvent('flashready');
 
@@ -231,7 +231,6 @@ package {
     private function playerPause():void {
       mediaPlayer.pause();
 
-      debugLog("pausing playback");
       playbackState = "PAUSED";
     }
 
