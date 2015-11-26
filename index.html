@@ -1,23 +1,27 @@
-<!DOCTYPE HTML>
 <html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <script type="text/javascript" charset="utf-8" src="http://cdn.clappr.io/latest/clappr.min.js"></script>
-  <script type="text/javascript" charset="utf-8" src="/dist/rtmp.js"></script>
-  <title>RTMP Test Page</title>
-  <script type="text/javascript" charset="utf-8">
-window.onload = function() {
-  var player = new Clappr.Player({
-    source: 'rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/8Juv1MVa-485.mp4',
-    plugins: {playback: [RTMP]},
-    parentId: '#player-wrapper'
-  });
-}
-  </script>
-</head>
-<body>
-  <div id="player-wrapper">
-  </div>
-</body>
-</html>
+    <head>
+      <script type="text/javascript" src="node_modules/clappr/dist/clappr.js"></script>
+      <script type="text/javascript" src="dist/rtmp.js"></script>
+    </head>
 
+    <body>
+      <div id="player"></div>
+      <script>
+        var player = new Clappr.Player({
+            source: "rtmp://fms.12E5.edgecastcdn.net/0012E5/mp4:videos/8Juv1MVa-485.mp4",
+            parentId: "#player",
+            autoPlay: true,
+            rtmpConfig: {
+                swfPath: 'dist/assets/RTMP.swf',
+                scaling:'stretch',
+                playbackType: 'vod',
+                bufferTime: 1,
+                startLevel: 0
+            },
+            plugins: {
+                playback: [RTMP]
+            },
+        });
+      </script>
+    </body>
+</html>
