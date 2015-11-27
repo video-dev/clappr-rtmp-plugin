@@ -108,9 +108,9 @@ export default class RTMP extends Flash {
 
     updateTime() {
         if (this.getPlaybackType() === 'live') {
-            this.trigger(Events.PLAYBACK_TIMEUPDATE, 1, 1, this.name)
+            this.trigger(Events.PLAYBACK_TIMEUPDATE, {current: 1, total: 1}, this.name)
         } else {
-            this.trigger(Events.PLAYBACK_TIMEUPDATE, this.el.getPosition(), this.el.getDuration(), this.name)
+            this.trigger(Events.PLAYBACK_TIMEUPDATE, {current: this.el.getPosition(), total: this.el.getDuration()}, this.name)
         }
     }
 
