@@ -87,7 +87,7 @@ package {
       setupCallbacks();
       setupGetters();
 
-      ExternalInterface.call('console.log', 'clappr rtmp 0.10.3-alpha');
+      ExternalInterface.call('console.log', 'clappr rtmp 0.10.5');
 
       _triggerEvent('flashready');
 
@@ -195,6 +195,7 @@ package {
 
         mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
         mediaPlayer.autoPlay = false;
+        mediaPlayer.autoDynamicStreamSwitch = this.root.loaderInfo.parameters.autoSwitch == 'true';
         mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);

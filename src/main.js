@@ -35,6 +35,7 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig.scaling = this.options.rtmpConfig.scaling || 'letterbox'
         this.options.rtmpConfig.playbackType = this.options.rtmpConfig.playbackType || this.options.src.indexOf('live') > -1
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel || 0
+        this.options.rtmpConfig.autoSwitch = this.options.rtmpConfig.autoSwitch !== undefined ? this.options.rtmpConfig.autoSwitch : true;
         this.setupPlaybackType()
     }
 
@@ -121,7 +122,8 @@ export default class RTMP extends Flash {
         if (currentLevel) {
             this.trigger(Events.PLAYBACK_BITRATE, {
                 bitrate: currentLevel.bitrate,
-                level: data.level
+                level: data.level,
+                autoSwitch: this.autoSwitchLevels
             })
         }
     }
@@ -136,7 +138,8 @@ export default class RTMP extends Flash {
 
     render() {
         this.$el.html(this.template({ cid: this.cid, swfPath: this.swfPath, playbackId: this.uniqueId, wmode: this.options.rtmpConfig.wmode, scaling: this.options.rtmpConfig.scaling,
-                                      bufferTime: this.options.rtmpConfig.bufferTime, playbackType: this.options.rtmpConfig.playbackType, startLevel: this.options.rtmpConfig.startLevel }))
+                                      bufferTime: this.options.rtmpConfig.bufferTime, playbackType: this.options.rtmpConfig.playbackType, startLevel: this.options.rtmpConfig.startLevel,
+                                      autoSwitch: this.options.rtmpConfig.autoSwitch }))
         if (Browser.isIE) {
             this.$('embed').remove()
             if (Browser.isLegacyIE) {
