@@ -182,8 +182,11 @@ package {
           urlResource = new StreamingURLResource(url, StreamType.RECORDED);
         }
 
-        var sl1:int = int(this.root.loaderInfo.parameters.startLevel);
-        urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX, sl1);
+        var startLevel:int = int(this.root.loaderInfo.parameters.startLevel);
+
+        if (startLevel > -1) {
+          urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX, startLevel);
+        }
 
         var pluginResource:MediaResourceBase = new PluginInfoResource(new SMILPluginInfo());
 
@@ -195,7 +198,7 @@ package {
 
         mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
         mediaPlayer.autoPlay = false;
-        mediaPlayer.autoDynamicStreamSwitch = this.root.loaderInfo.parameters.autoSwitch == 'true';
+        mediaPlayer.autoDynamicStreamSwitch = startLevel == -1;
         mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
         mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
