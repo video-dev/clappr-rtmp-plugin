@@ -31,7 +31,7 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig = this.options.rtmpConfig || {}
         this.options.rtmpConfig.swfPath = this.options.rtmpConfig.swfPath || '//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf'
         this.options.rtmpConfig.wmode = this.options.rtmpConfig.wmode || 'transparent' // Default to transparent wmode - IE always uses gpu as per objectIE
-        this.options.rtmpConfig.bufferTime = this.options.rtmpConfig.bufferTime || 0.1
+        this.options.rtmpConfig.bufferTime = this.options.rtmpConfig.bufferTime === undefined ? 0.1 : this.options.rtmpConfig.bufferTime
         this.options.rtmpConfig.scaling = this.options.rtmpConfig.scaling || 'letterbox'
         this.options.rtmpConfig.playbackType = this.options.rtmpConfig.playbackType || this.options.src.indexOf('live') > -1
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
