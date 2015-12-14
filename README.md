@@ -24,7 +24,6 @@ var player = new Clappr.Player({
         playbackType: 'live',
         bufferTime: 1,
         startLevel: 0,
-        autoSwitch: true,
     },
 });
 ```
@@ -37,8 +36,7 @@ The plugin accepts several **optional** configuration options, such as:
   - `scaling` (default **letterbox**) - Path to the SWF responsible for the playback.
   - `playbackType` (default **live** if the source contains live on its URL, **vod** otherwise).
   - `bufferTime` (default **0.1**) - How long to buffer before start playing the media.
-  - `startLevel` (default **0**) - Initial quality level index.
-  - `autoSwitch` (default **true**) - Allow to choose between auto and manual level switch.
+  - `startLevel` (default **-1**) - Initial quality level index.
 
 ## Building
 

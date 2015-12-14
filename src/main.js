@@ -31,11 +31,10 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig = this.options.rtmpConfig || {}
         this.options.rtmpConfig.swfPath = this.options.rtmpConfig.swfPath || '//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf'
         this.options.rtmpConfig.wmode = this.options.rtmpConfig.wmode || 'transparent' // Default to transparent wmode - IE always uses gpu as per objectIE
-        this.options.rtmpConfig.bufferTime = this.options.rtmpConfig.bufferTime || 0.1
+        this.options.rtmpConfig.bufferTime = this.options.rtmpConfig.bufferTime === undefined ? 0.1 : this.options.rtmpConfig.bufferTime
         this.options.rtmpConfig.scaling = this.options.rtmpConfig.scaling || 'letterbox'
         this.options.rtmpConfig.playbackType = this.options.rtmpConfig.playbackType || this.options.src.indexOf('live') > -1
-        this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel || 0
-        this.options.rtmpConfig.autoSwitch = this.options.rtmpConfig.autoSwitch !== undefined ? this.options.rtmpConfig.autoSwitch : true;
+        this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
         this.setupPlaybackType()
     }
 
@@ -57,6 +56,7 @@ export default class RTMP extends Flash {
 
 
     set currentLevel(level) {
+        this.trigger(Events.PLAYBACK_LEVEL_SWITCH_START)
         this.el.setLevel(level);
     }
 
@@ -71,8 +71,8 @@ export default class RTMP extends Flash {
             var bitrate = this.el.getBitrateForLevel(i);
 
             levels.push({
-                bitrate: bitrate * 1000, // KBytes to Bytes
-                label: bitrate
+                id: i,
+                label: bitrate + "Kbps"
             });
         }
 
@@ -116,16 +116,13 @@ export default class RTMP extends Flash {
     }
 
     levelChange() {
-        var data = {level: this.currentLevel}
-        this.trigger(Events.PLAYBACK_LEVEL_SWITCH, data)
-        var currentLevel = this.levels[data.level]
-        if (currentLevel) {
-            this.trigger(Events.PLAYBACK_BITRATE, {
-                bitrate: currentLevel.bitrate,
-                level: data.level,
-                autoSwitch: this.autoSwitchLevels
-            })
-        }
+        this.trigger(Events.PLAYBACK_LEVEL_SWITCH_END)
+    }
+
+    findLevelBy(id) {
+        var foundLevel
+        this.levels.forEach((level) => { if (level.id === id) {foundLevel = level} })
+        return foundLevel
     }
 
     setupPlaybackType() {
@@ -138,8 +135,7 @@ export default class RTMP extends Flash {
 
     render() {
         this.$el.html(this.template({ cid: this.cid, swfPath: this.swfPath, playbackId: this.uniqueId, wmode: this.options.rtmpConfig.wmode, scaling: this.options.rtmpConfig.scaling,
-                                      bufferTime: this.options.rtmpConfig.bufferTime, playbackType: this.options.rtmpConfig.playbackType, startLevel: this.options.rtmpConfig.startLevel,
-                                      autoSwitch: this.options.rtmpConfig.autoSwitch }))
+                                      bufferTime: this.options.rtmpConfig.bufferTime, playbackType: this.options.rtmpConfig.playbackType, startLevel: this.options.rtmpConfig.startLevel }))
         if (Browser.isIE) {
             this.$('embed').remove()
             if (Browser.isLegacyIE) {
@@ -158,7 +154,9 @@ export default class RTMP extends Flash {
         super.checkState()
 
         if (this.isDynamicStream) {
-            this.trigger(Events.PLAYBACK_FRAGMENT_LOADED)
+            if (this.levels) {
+                this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, this.options.rtmpConfig.startLevel)
+            }
         }
     }
 }
