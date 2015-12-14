@@ -87,8 +87,6 @@ package {
       setupCallbacks();
       setupGetters();
 
-      ExternalInterface.call('console.log', 'clappr rtmp 0.10.5');
-
       _triggerEvent('flashready');
 
       stage.scaleMode = StageScaleMode.NO_SCALE;
