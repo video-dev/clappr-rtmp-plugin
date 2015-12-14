@@ -39,7 +39,7 @@ export default class RTMP extends Flash {
     }
 
     getPlaybackType() {
-        return this.options.rtmpConfig.playbackType
+        return this.playbackType
     }
 
     get swfPath() {
@@ -102,9 +102,8 @@ export default class RTMP extends Flash {
     bootstrap() {
         this.el.width = '100%'
         this.el.height = '100%'
-        this.isReady = true
-        this.trigger(Events.PLAYBACK_READY, this.name)
         this.options.autoPlay && this.play()
+        this.setupSettings()
     }
 
     updateTime() {
@@ -126,11 +125,21 @@ export default class RTMP extends Flash {
     }
 
     setupPlaybackType() {
+        this.playbackType = this.options.rtmpConfig.playbackType
+    }
+
+    setupSettings() {
         if (this.getPlaybackType() === 'live') {
-            this.settings = {'left': ["playpause"], 'default': ['seekbar'], 'right': ['fullscreen', 'volume']}
+            this.settings.left = ["playpause"]
+            this.settings.right = ["fullscreen", "volume"]
             this.settings.seekEnabled = false
-            this.trigger(Events.PLAYBACK_SETTINGSUPDATE)
         }
+        else {
+            this.settings.left = ["playpause", "position", "duration"]
+            this.settings.right = ["fullscreen", "volume"]
+        }
+
+        this.trigger(Events.PLAYBACK_SETTINGSUPDATE)
     }
 
     render() {
@@ -152,6 +161,9 @@ export default class RTMP extends Flash {
 
     checkState() {
         super.checkState()
+
+        this.isReady = true
+        this.trigger(Events.PLAYBACK_READY, this.name)
 
         if (this.isDynamicStream) {
             if (this.levels) {
