@@ -139,6 +139,7 @@ package {
     }
 
     private function onLoaded(event:LoadEvent):void {
+      _triggerEvent("onloaded")
       netStream = netStreamLoadTrait.netStream;
       netStream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
       mediaPlayer.play();
