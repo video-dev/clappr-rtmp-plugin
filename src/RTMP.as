@@ -221,7 +221,10 @@ package {
     }
 
     private function onLevelSwitching(event:DynamicStreamEvent):void {
-      if (!event.switching) {
+      if (event.switching) {
+        _triggerEvent("levelChanging");
+      }
+      else {
         _triggerEvent("levelChanged");
       }
     }

@@ -56,7 +56,6 @@ export default class RTMP extends Flash {
 
 
     set currentLevel(level) {
-        this.trigger(Events.PLAYBACK_LEVEL_SWITCH_START)
         this.el.setLevel(level);
     }
 
@@ -87,6 +86,7 @@ export default class RTMP extends Flash {
         Mediator.on(this.uniqueId + ':progress', this.progress, this)
         Mediator.on(this.uniqueId + ':timeupdate', this.updateTime, this)
         Mediator.on(this.uniqueId + ':statechanged', this.checkState, this)
+        Mediator.on(this.uniqueId + ':levelChanging', this.levelChanging, this)
         Mediator.on(this.uniqueId + ':levelChanged', this.levelChange, this)
         Mediator.on(this.uniqueId + ':flashready', this.bootstrap, this)
     }
@@ -112,6 +112,10 @@ export default class RTMP extends Flash {
         } else {
             this.trigger(Events.PLAYBACK_TIMEUPDATE, {current: this.el.getPosition(), total: this.el.getDuration()}, this.name)
         }
+    }
+
+    levelChanging() {
+        this.trigger(Events.PLAYBACK_LEVEL_SWITCH_START)
     }
 
     levelChange() {
