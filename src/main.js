@@ -86,6 +86,7 @@ export default class RTMP extends Flash {
         Mediator.on(this.uniqueId + ':progress', this.progress, this)
         Mediator.on(this.uniqueId + ':timeupdate', this.updateTime, this)
         Mediator.on(this.uniqueId + ':statechanged', this.checkState, this)
+        Mediator.on(this.uniqueId + ':playbackready', this.playbackReady, this)
         Mediator.on(this.uniqueId + ':onloaded', this.reporLevels, this)
         Mediator.on(this.uniqueId + ':levelChanging', this.levelChanging, this)
         Mediator.on(this.uniqueId + ':levelChanged', this.levelChange, this)
@@ -167,6 +168,12 @@ export default class RTMP extends Flash {
     checkState() {
         super.checkState()
 
+        if (this.el.getState() === "PLAYING") {
+            this.trigger(Events.PLAYBACK_PLAY, this.name)
+        }
+    }
+
+    playbackReady() {
         this.isReady = true
         this.trigger(Events.PLAYBACK_READY, this.name)
     }

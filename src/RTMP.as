@@ -172,9 +172,6 @@ package {
 
     private function playerPlay(url:String=null):void {
       if (!mediaElement) {
-        playbackState = "PLAYING_BUFFERING";
-        _triggerEvent('statechanged');
-
         if (isLive) {
           urlResource = new StreamingURLResource(url, StreamType.LIVE);
         } else {
@@ -216,6 +213,10 @@ package {
 
         addChild(mediaContainer);
         resize();
+
+        playbackState = "PLAYING_BUFFERING";
+        _triggerEvent('statechanged');
+        _triggerEvent('playbackready');
       } else {
         mediaPlayer.play();
       }
