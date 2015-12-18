@@ -174,7 +174,7 @@ export default class RTMP extends Flash {
     }
 
     playbackReady() {
-        this.isReady = true
+        this.isReadyState = true
         this.trigger(Events.PLAYBACK_READY, this.name)
     }
 
