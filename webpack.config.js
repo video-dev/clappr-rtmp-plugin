@@ -25,6 +25,7 @@ module.exports = {
                 loader: 'babel',
                 query: {
                     compact: true,
+                    presets: ['es2015'],
                 }
             },
             { test: /\.(png|woff|eot|ttf|swf)/, loader: 'file-loader' }
