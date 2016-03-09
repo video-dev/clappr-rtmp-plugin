@@ -170,6 +170,8 @@ export default class RTMP extends Flash {
 
         if (this.el.getState() === "PLAYING") {
             this.trigger(Events.PLAYBACK_PLAY, this.name)
+        } else if (this.el.getState() === "ERROR") {
+            this.trigger(Events.PLAYBACK_ERROR, this.name)
         }
     }
 

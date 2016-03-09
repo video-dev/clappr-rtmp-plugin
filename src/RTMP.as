@@ -171,54 +171,59 @@ package {
     }
 
     private function playerPlay(url:String=null):void {
-      if (!mediaElement) {
-        if (isLive) {
-          urlResource = new StreamingURLResource(url, StreamType.LIVE);
+      try {
+        if (!mediaElement) {
+          if (isLive) {
+            urlResource = new StreamingURLResource(url, StreamType.LIVE);
+          } else {
+            urlResource = new StreamingURLResource(url, StreamType.RECORDED);
+          }
+
+          var startLevel:int = int(this.root.loaderInfo.parameters.startLevel);
+
+          if (startLevel > -1) {
+            urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX, startLevel);
+          }
+
+          var pluginResource:MediaResourceBase = new PluginInfoResource(new SMILPluginInfo());
+
+          // Load the plugin.
+          mediaFactory.loadPlugin(pluginResource);
+
+          //create new MediaPlayer - it controls your media provided in media property
+          mediaPlayer = new MediaPlayer();
+
+          mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
+          mediaPlayer.autoPlay = false;
+          mediaPlayer.autoDynamicStreamSwitch = startLevel == -1;
+          mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
+          mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
+          mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
+          mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
+          mediaPlayer.addEventListener(DynamicStreamEvent.SWITCHING_CHANGE, onLevelSwitching);
+
+          mediaElement = mediaFactory.createMediaElement(urlResource);
+          mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+
+          mediaContainer.addMediaElement(mediaElement);
+
+          mediaPlayer.media = mediaElement;
+
+          //Set the player scaling
+          playerScaling(this.root.loaderInfo.parameters.scaling);
+
+          addChild(mediaContainer);
+          resize();
+
+          playbackState = "PLAYING_BUFFERING";
+          _triggerEvent('statechanged');
+          _triggerEvent('playbackready');
         } else {
-          urlResource = new StreamingURLResource(url, StreamType.RECORDED);
+          mediaPlayer.play();
         }
-
-        var startLevel:int = int(this.root.loaderInfo.parameters.startLevel);
-
-        if (startLevel > -1) {
-          urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX, startLevel);
-        }
-
-        var pluginResource:MediaResourceBase = new PluginInfoResource(new SMILPluginInfo());
-
-        // Load the plugin.
-        mediaFactory.loadPlugin(pluginResource);
-
-        //create new MediaPlayer - it controls your media provided in media property
-        mediaPlayer = new MediaPlayer();
-
-        mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
-        mediaPlayer.autoPlay = false;
-        mediaPlayer.autoDynamicStreamSwitch = startLevel == -1;
-        mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
-        mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
-        mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
-        mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
-        mediaPlayer.addEventListener(DynamicStreamEvent.SWITCHING_CHANGE, onLevelSwitching);
-
-        mediaElement = mediaFactory.createMediaElement(urlResource);
-        mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
-
-        mediaContainer.addMediaElement(mediaElement);
-
-        mediaPlayer.media = mediaElement;
-
-        //Set the player scaling
-        playerScaling(this.root.loaderInfo.parameters.scaling);
-
-        addChild(mediaContainer);
-        resize();
-
-        playbackState = "PLAYING_BUFFERING";
+      } catch {
+        playbackState = "ERROR";
         _triggerEvent('statechanged');
-        _triggerEvent('playbackready');
-      } else {
-        mediaPlayer.play();
       }
     }
 
