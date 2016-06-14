@@ -35,11 +35,11 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig.scaling = this.options.rtmpConfig.scaling || 'letterbox'
         this.options.rtmpConfig.playbackType = this.options.rtmpConfig.playbackType || this.options.src.indexOf('live') > -1
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
-        this.setupPlaybackType()
+        this._setupPlaybackType()
     }
 
     getPlaybackType() {
-        return this.playbackType
+        return this._playbackType
     }
 
     get swfPath() {
@@ -83,14 +83,14 @@ export default class RTMP extends Flash {
     }
 
     addListeners() {
-        Mediator.on(this.uniqueId + ':progress', this.progress, this)
-        Mediator.on(this.uniqueId + ':timeupdate', this.updateTime, this)
-        Mediator.on(this.uniqueId + ':statechanged', this.checkState, this)
-        Mediator.on(this.uniqueId + ':playbackready', this.playbackReady, this)
-        Mediator.on(this.uniqueId + ':onloaded', this.reporLevels, this)
-        Mediator.on(this.uniqueId + ':levelChanging', this.levelChanging, this)
-        Mediator.on(this.uniqueId + ':levelChanged', this.levelChange, this)
-        Mediator.on(this.uniqueId + ':flashready', this.bootstrap, this)
+        Mediator.on(this.uniqueId + ':progress', this._progress, this)
+        Mediator.on(this.uniqueId + ':timeupdate', this._updateTime, this)
+        Mediator.on(this.uniqueId + ':statechanged', this._checkState, this)
+        Mediator.on(this.uniqueId + ':playbackready', this._playbackReady, this)
+        Mediator.on(this.uniqueId + ':onloaded', this._reporLevels, this)
+        Mediator.on(this.uniqueId + ':levelChanging', this._levelChanging, this)
+        Mediator.on(this.uniqueId + ':levelChanged', this._levelChange, this)
+        Mediator.on(this.uniqueId + ':flashready', this._bootstrap, this)
     }
 
     stopListening() {
@@ -101,14 +101,14 @@ export default class RTMP extends Flash {
         Mediator.off(this.uniqueId + ':flashready')
     }
 
-    bootstrap() {
+    _bootstrap() {
         this.el.width = '100%'
         this.el.height = '100%'
         this.options.autoPlay && this.play()
-        this.setupSettings()
+        this._setupSettings()
     }
 
-    updateTime() {
+    _updateTime() {
         if (this.getPlaybackType() === 'live') {
             this.trigger(Events.PLAYBACK_TIMEUPDATE, {current: 1, total: 1}, this.name)
         } else {
@@ -116,11 +116,11 @@ export default class RTMP extends Flash {
         }
     }
 
-    levelChanging() {
+    _levelChanging() {
         this.trigger(Events.PLAYBACK_LEVEL_SWITCH_START)
     }
 
-    levelChange() {
+    _levelChange() {
         this.trigger(Events.PLAYBACK_LEVEL_SWITCH_END)
     }
 
@@ -130,11 +130,11 @@ export default class RTMP extends Flash {
         return foundLevel
     }
 
-    setupPlaybackType() {
-        this.playbackType = this.options.rtmpConfig.playbackType
+    _setupPlaybackType() {
+        this._playbackType = this.options.rtmpConfig.playbackType
     }
 
-    setupSettings() {
+    _setupSettings() {
         if (this.getPlaybackType() === 'live') {
             this.settings.left = ["playpause"]
             this.settings.right = ["fullscreen", "volume"]
@@ -157,7 +157,7 @@ export default class RTMP extends Flash {
                 this.$el.attr('classid', IE_CLASSID)
             }
         } else if (Browser.isFirefox) {
-            this.setupFirefox()
+            this._setupFirefox()
         }
         this.el.id = this.cid
         var style = Styler.getStyleFor(flashStyle)
@@ -165,8 +165,8 @@ export default class RTMP extends Flash {
         return this
     }
 
-    checkState() {
-        super.checkState()
+    _checkState() {
+        super._checkState()
 
         if (this.el.getState() === "PLAYING") {
             this.trigger(Events.PLAYBACK_PLAY, this.name)
@@ -175,12 +175,12 @@ export default class RTMP extends Flash {
         }
     }
 
-    playbackReady() {
-        this.isReadyState = true
+    _playbackReady() {
+        this._isReadyState = true
         this.trigger(Events.PLAYBACK_READY, this.name)
     }
 
-    reporLevels() {
+    _reporLevels() {
         if (this.isDynamicStream) {
             if (this.levels) {
                 this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, this.options.rtmpConfig.startLevel)
