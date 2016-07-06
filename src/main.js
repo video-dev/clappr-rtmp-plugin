@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import {Browser} from 'clappr'
-import {Events} from 'clappr'
-import {Flash} from 'clappr'
-import {Mediator} from 'clappr'
-import {Styler} from 'clappr'
-import template from 'clappr/src/base/template'
+import {Browser, Events, Flash, Mediator, Styler, UICorePlugin, template} from 'clappr'
 
-import flashHTML from 'html!../public/flash.html'
+import flashHTML from '../public/flash.html'
 import flashStyle from '!raw!sass!../public/flash.scss'
 
 export default class RTMP extends Flash {
@@ -27,7 +22,6 @@ export default class RTMP extends Flash {
 
     constructor(options) {
         super(options)
-        this.options = options
         this.options.rtmpConfig = this.options.rtmpConfig || {}
         this.options.rtmpConfig.swfPath = this.options.rtmpConfig.swfPath || '//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf'
         this.options.rtmpConfig.wmode = this.options.rtmpConfig.wmode || 'transparent' // Default to transparent wmode - IE always uses gpu as per objectIE
@@ -86,7 +80,6 @@ export default class RTMP extends Flash {
         Mediator.on(this.uniqueId + ':progress', this._progress, this)
         Mediator.on(this.uniqueId + ':timeupdate', this._updateTime, this)
         Mediator.on(this.uniqueId + ':statechanged', this._checkState, this)
-        Mediator.on(this.uniqueId + ':playbackready', this._playbackReady, this)
         Mediator.on(this.uniqueId + ':onloaded', this._reporLevels, this)
         Mediator.on(this.uniqueId + ':levelChanging', this._levelChanging, this)
         Mediator.on(this.uniqueId + ':levelChanged', this._levelChange, this)
@@ -145,7 +138,7 @@ export default class RTMP extends Flash {
             this.settings.right = ["fullscreen", "volume"]
         }
 
-        this.trigger(Events.PLAYBACK_SETTINGSUPDATE)
+        this.trigger(Events.PLAYBACK_SETTINGSUPDATE, this.name)
     }
 
     render() {
@@ -170,14 +163,14 @@ export default class RTMP extends Flash {
 
         if (this.el.getState() === "PLAYING") {
             this.trigger(Events.PLAYBACK_PLAY, this.name)
+        } else if (this.el.getState() === "PLAYING_BUFFERING") {
+            if (this._isReadyState === false) {
+                this._isReadyState = true
+                this.trigger(Events.PLAYBACK_READY, this.name)
+            }
         } else if (this.el.getState() === "ERROR") {
             this.trigger(Events.PLAYBACK_ERROR, this.name)
         }
-    }
-
-    _playbackReady() {
-        this._isReadyState = true
-        this.trigger(Events.PLAYBACK_READY, this.name)
     }
 
     _reporLevels() {

@@ -1,2 +1,1 @@
-import RTMP from './src/main'
-module.exports = window.RTMP = RTMP;
+export default require('./src/main.js')
