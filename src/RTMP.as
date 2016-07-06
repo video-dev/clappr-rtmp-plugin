@@ -125,10 +125,29 @@ package {
       ExternalInterface.addCallback("getPosition", getPosition);
       ExternalInterface.addCallback("getDuration", getDuration);
       ExternalInterface.addCallback("getCurrentLevel", getCurrentLevel);
+      ExternalInterface.addCallback("getBytesLoaded", getBytesLoaded);
+      ExternalInterface.addCallback("getBytesTotal", getBytesTotal);
       ExternalInterface.addCallback("getNumLevels", getNumLevels);
       ExternalInterface.addCallback("getBitrateForLevel", getBitrateForLevel);
       ExternalInterface.addCallback("isDynamicStream", isDynamicStream);
       ExternalInterface.addCallback("isAutoSwitchLevels", isAutoSwitchLevels);
+    }
+
+    private function getBytesTotal():Number {
+      if (netStream) {
+        return netStream.bytesTotal;
+      }
+      else {
+          return 0;
+      }
+    }
+    private function getBytesLoaded():Number {
+        if (netStream) {
+          return netStream.bytesLoaded;
+        }
+        else {
+            return 0;
+        }
     }
 
     private function onTraitAdd(event:MediaElementEvent):void {
@@ -221,7 +240,7 @@ package {
         } else {
           mediaPlayer.play();
         }
-      } catch {
+      } catch (err:Error) {
         playbackState = "ERROR";
         _triggerEvent('statechanged');
       }
