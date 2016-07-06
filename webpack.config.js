@@ -25,10 +25,25 @@ module.exports = {
                 loader: 'babel',
                 query: {
                     compact: true,
-                    presets: ['es2015'],
                 }
             },
-            { test: /\.(png|woff|eot|ttf|swf)/, loader: 'file-loader' }
+            {
+                test: /\.scss$/,
+                loaders: ['css', 'sass?includePaths[]='
+                  + path.resolve(__dirname, './node_modules/compass-mixins/lib')
+                  + '&includePaths[]='
+                  + path.resolve(__dirname, './node_modules/clappr/src/base/scss')
+                  + '&includePaths[]='
+                  + path.resolve(__dirname, './src/base/scss')
+                ],
+                include: path.resolve(__dirname, 'src'),
+            },
+            {
+                test: /\.html/, loader: 'html?minimize=false'
+            },
+            {
+                test: /\.(png|woff|eot|ttf|swf)/, loader: 'file-loader'
+            }
         ],
     },
     resolve: {

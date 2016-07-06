@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import {Browser} from 'clappr'
-import {Events} from 'clappr'
-import {Flash} from 'clappr'
-import {Mediator} from 'clappr'
-import {Styler} from 'clappr'
-import template from 'clappr/src/base/template'
+import {Browser, Events, Flash, Mediator, Styler, UICorePlugin, template} from 'clappr'
 
-import flashHTML from 'html!../public/flash.html'
+import flashHTML from '../public/flash.html'
 import flashStyle from '!raw!sass!../public/flash.scss'
 
 export default class RTMP extends Flash {
@@ -27,7 +22,6 @@ export default class RTMP extends Flash {
 
     constructor(options) {
         super(options)
-        this.options = options
         this.options.rtmpConfig = this.options.rtmpConfig || {}
         this.options.rtmpConfig.swfPath = this.options.rtmpConfig.swfPath || '//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf'
         this.options.rtmpConfig.wmode = this.options.rtmpConfig.wmode || 'transparent' // Default to transparent wmode - IE always uses gpu as per objectIE
@@ -35,6 +29,7 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig.scaling = this.options.rtmpConfig.scaling || 'letterbox'
         this.options.rtmpConfig.playbackType = this.options.rtmpConfig.playbackType || this.options.src.indexOf('live') > -1
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
+        this.addListeners()
         this._setupPlaybackType()
     }
 
@@ -47,11 +42,19 @@ export default class RTMP extends Flash {
     }
 
     get currentLevel() {
-        return this.el.getCurrentLevel();
+        if (this._isReadyState) {
+            return this.el.getCurrentLevel();
+        }
+
+        return undefined;
     }
 
     get numLevels() {
-        return this.el.getNumLevels();
+        if (this._isReadyState) {
+            return this.el.getNumLevels();
+        }
+
+        return undefined;
     }
 
 
@@ -122,6 +125,7 @@ export default class RTMP extends Flash {
 
     _levelChange() {
         this.trigger(Events.PLAYBACK_LEVEL_SWITCH_END)
+        this.trigger(Events.PLAYBACK_BITRATE, {level: this.currentLevel})
     }
 
     findLevelBy(id) {
@@ -145,7 +149,7 @@ export default class RTMP extends Flash {
             this.settings.right = ["fullscreen", "volume"]
         }
 
-        this.trigger(Events.PLAYBACK_SETTINGSUPDATE)
+        this.trigger(Events.PLAYBACK_SETTINGSUPDATE, this.name)
     }
 
     render() {
