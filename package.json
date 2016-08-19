@@ -1,6 +1,6 @@
 {
   "name": "clappr-rtmp",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "RTMP Support for Clappr Player",
   "main": "dist/rtmp.js",
   "author": "Flávio Ribeiro",
