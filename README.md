@@ -33,10 +33,11 @@ var player = new Clappr.Player({
 The plugin accepts several **optional** configuration options, such as:
 
   - `swfPath` (default **//cdn.jsdelivr.net/clappr.rtmp/latest/assets/RTMP.swf**) - Path to the SWF responsible for the playback.
-  - `scaling` (default **letterbox**) - Path to the SWF responsible for the playback.
+  - `scaling` (default **letterbox**) - Scaling behavior.
   - `playbackType` (default **live** if the source contains live on its URL, **vod** otherwise).
   - `bufferTime` (default **0.1**) - How long to buffer before start playing the media.
   - `startLevel` (default **-1**) - Initial quality level index.
+  - `useAppInstance` (default **false**) - Set it to `true` if your source url contains the app instance (not required if the app instance is _definst_).
 
 ## Building
 
