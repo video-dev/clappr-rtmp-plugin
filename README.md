@@ -37,7 +37,7 @@ The plugin accepts several **optional** configuration options, such as:
   - `playbackType` (default **live** if the source contains live on its URL, **vod** otherwise).
   - `bufferTime` (default **0.1**) - How long to buffer before start playing the media.
   - `startLevel` (default **-1**) - Initial quality level index.
-  - `useAppInstance` (default **false**) - Set it to `true` if your source url contains the app instance (not required if the app instance is _definst_).
+  - `useAppInstance` (default **false**) - Set it to `true` if your source url contains the app instance (not required if the app instance is `_definst_`).
 
 ## Building
 
