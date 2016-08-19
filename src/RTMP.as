@@ -51,6 +51,7 @@ package {
     private var urlResource:StreamingURLResource;
     private var playbackState:String = "IDLE";
     private var isLive:Boolean = false;
+    private var useAppInstance:Boolean = false;
 
     CONFIG::LOGGING {
       private static const logInit:Boolean = initLog();
@@ -69,6 +70,7 @@ package {
 
       playbackId = this.root.loaderInfo.parameters.playbackId;
       isLive = this.root.loaderInfo.parameters.playbackType == 'live';
+      useAppInstance = this.root.loaderInfo.parameters.useAppInstance == 'true';
       mediaFactory = new DefaultMediaFactory();
       mediaContainer = new MediaContainer();
 
@@ -193,9 +195,9 @@ package {
       try {
         if (!mediaElement) {
           if (isLive) {
-            urlResource = new StreamingURLResource(url, StreamType.LIVE);
+            urlResource = new StreamingURLResource(url, StreamType.LIVE, NaN, NaN, null, useAppInstance);
           } else {
-            urlResource = new StreamingURLResource(url, StreamType.RECORDED);
+            urlResource = new StreamingURLResource(url, StreamType.RECORDED, NaN, NaN, null, useAppInstance);
           }
 
           var startLevel:int = int(this.root.loaderInfo.parameters.startLevel);
