@@ -52,6 +52,7 @@ package {
     private var playbackState:String = "IDLE";
     private var isLive:Boolean = false;
     private var useAppInstance:Boolean = false;
+    private var proxyType:String = "none";
 
     CONFIG::LOGGING {
       private static const logInit:Boolean = initLog();
@@ -71,6 +72,7 @@ package {
       playbackId = this.root.loaderInfo.parameters.playbackId;
       isLive = this.root.loaderInfo.parameters.playbackType == 'live';
       useAppInstance = this.root.loaderInfo.parameters.useAppInstance == 'true';
+      proxyType = this.root.loaderInfo.parameters.proxyType;
       mediaFactory = new DefaultMediaFactory();
       mediaContainer = new MediaContainer();
 
@@ -195,9 +197,9 @@ package {
       try {
         if (!mediaElement) {
           if (isLive) {
-            urlResource = new StreamingURLResource(url, StreamType.LIVE, NaN, NaN, null, useAppInstance);
+            urlResource = new StreamingURLResource(url, StreamType.LIVE, NaN, NaN, null, useAppInstance, null, proxyType);
           } else {
-            urlResource = new StreamingURLResource(url, StreamType.RECORDED, NaN, NaN, null, useAppInstance);
+            urlResource = new StreamingURLResource(url, StreamType.RECORDED, NaN, NaN, null, useAppInstance, null, proxyType);
           }
 
           var startLevel:int = int(this.root.loaderInfo.parameters.startLevel);
