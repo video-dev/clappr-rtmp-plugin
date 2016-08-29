@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build_swf": "cd ./src/ && sh build_player.sh",
-    "release": "node_modules/.bin/webpack --progress -d --optimize-minimize --optimize-dedupe --output-filename rtmp.min.js",
+    "release": "node_modules/.bin/webpack --no-minimize && node_modules/.bin/webpack --progress -d --optimize-minimize --optimize-dedupe --output-filename rtmp.min.js",
     "build": "node_modules/.bin/webpack --progress",
     "watch": "node_modules/.bin/webpack --progress --watch",
     "test": "karma start --single-run --browsers Chrome",
