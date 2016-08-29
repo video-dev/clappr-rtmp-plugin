@@ -37,6 +37,7 @@ The plugin accepts several **optional** configuration options, such as:
   - `playbackType` (default **live** if the source contains live on its URL, **vod** otherwise).
   - `bufferTime` (default **0.1**) - How long to buffer before start playing the media.
   - `startLevel` (default **-1**) - Initial quality level index.
+  - `autoSwitch` (default **false**) - Whether video should autoSwitch quality
   - `useAppInstance` (default **false**) - Set it to `true` if your source url contains the app instance (not required if the app instance is `_definst_`).
   - `proxyType` (default **none**) - Determines which fallback methods are tried if an initial connection attempt to Flash Media Server fails.
 

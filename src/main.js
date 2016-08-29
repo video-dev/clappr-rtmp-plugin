@@ -31,6 +31,7 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig.useAppInstance = this.options.rtmpConfig.useAppInstance === undefined ? false : this.options.rtmpConfig.useAppInstance
         this.options.rtmpConfig.proxyType = this.options.rtmpConfig.proxyType || 'none'
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
+        this.options.rtmpConfig.autoSwitch = this.options.rtmpConfig.autoSwitch === undefined ? false : this.options.rtmpConfig.autoSwitch
         this.addListeners()
         this._setupPlaybackType()
     }
@@ -62,6 +63,11 @@ export default class RTMP extends Flash {
 
     set currentLevel(level) {
         this.el.setLevel(level);
+
+        if (level === -1 && level !== this.currentLevel) {
+            this.trigger(Events.PLAYBACK_LEVEL_SWITCH_END)
+            this.trigger(Events.PLAYBACK_BITRATE, {level: this.currentLevel})
+        }
     }
 
     get autoSwitchLevels() {
@@ -155,8 +161,20 @@ export default class RTMP extends Flash {
     }
 
     render() {
-        this.$el.html(this.template({ cid: this.cid, swfPath: this.swfPath, playbackId: this.uniqueId, wmode: this.options.rtmpConfig.wmode, scaling: this.options.rtmpConfig.scaling,
-                                      bufferTime: this.options.rtmpConfig.bufferTime, playbackType: this.options.rtmpConfig.playbackType, startLevel: this.options.rtmpConfig.startLevel, useAppInstance: this.options.rtmpConfig.useAppInstance, proxyType: this.options.rtmpConfig.proxyType }))
+        this.$el.html(this.template({
+            cid: this.cid,
+            swfPath: this.swfPath,
+            playbackId: this.uniqueId,
+            wmode: this.options.rtmpConfig.wmode,
+            scaling: this.options.rtmpConfig.scaling,
+            bufferTime: this.options.rtmpConfig.bufferTime,
+            playbackType: this.options.rtmpConfig.playbackType,
+            startLevel: this.options.rtmpConfig.startLevel,
+            autoSwitch: this.options.rtmpConfig.autoSwitch,
+            useAppInstance: this.options.rtmpConfig.useAppInstance,
+            proxyType: this.options.rtmpConfig.proxyType
+        }))
+
         if (Browser.isIE) {
             this.$('embed').remove()
             if (Browser.isLegacyIE) {
@@ -189,7 +207,12 @@ export default class RTMP extends Flash {
     _reporLevels() {
         if (this.isDynamicStream) {
             if (this.levels) {
-                this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, this.options.rtmpConfig.startLevel)
+                if (this.options.rtmpConfig.autoSwitch === true) {
+                    this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, -1)
+                    this.trigger(Events.PLAYBACK_BITRATE, {level: this.currentLevel})
+                } else {
+                    this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, this.options.rtmpConfig.startLevel)
+                }
             }
         }
     }
