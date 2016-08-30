@@ -218,7 +218,7 @@ package {
 
           mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
           mediaPlayer.autoPlay = false;
-          mediaPlayer.autoDynamicStreamSwitch = this.root.loaderInfo.parameters.autoSwitch;
+          mediaPlayer.autoDynamicStreamSwitch = this.root.loaderInfo.parameters.autoSwitch == 'true';
           mediaPlayer.addEventListener(TimeEvent.CURRENT_TIME_CHANGE, onTimeUpdated);
           mediaPlayer.addEventListener(TimeEvent.DURATION_CHANGE, onTimeUpdated);
           mediaPlayer.addEventListener(TimeEvent.COMPLETE, onFinish);
