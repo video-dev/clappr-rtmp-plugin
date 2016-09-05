@@ -196,13 +196,16 @@ package {
     private function playerPlay(url:String=null):void {
       try {
         if (!mediaElement) {
-          if (isLive) {
-            urlResource = new StreamingURLResource(url, StreamType.LIVE, NaN, NaN, null, useAppInstance, null, proxyType);
-          } else {
-            urlResource = new StreamingURLResource(url, StreamType.RECORDED, NaN, NaN, null, useAppInstance, null, proxyType);
-          }
+          var streamType:String = (isLive ? StreamType.LIVE : StreamType.RECORDED);
+
+          urlResource = new StreamingURLResource(url, streamType, NaN, NaN, null, useAppInstance, null, proxyType);
 
           var startLevel:int = int(this.root.loaderInfo.parameters.startLevel);
+
+          if (this.root.loaderInfo.parameters.switchRules != "") {
+            var switchRules:Object = JSON.parse(this.root.loaderInfo.parameters.switchRules.replace(/&quote;/g, '"'));
+            urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_SWITCH_RULES, switchRules);
+          }
 
           if (startLevel > -1) {
             urlResource.addMetadataValue(MetadataNamespaces.RESOURCE_INITIAL_INDEX, startLevel);
@@ -245,6 +248,8 @@ package {
           mediaPlayer.play();
         }
       } catch (err:Error) {
+        debugLog('Catch error: ' + err.messsage);
+
         playbackState = "ERROR";
         _triggerEvent('statechanged');
       }
