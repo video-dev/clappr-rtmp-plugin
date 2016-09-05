@@ -32,6 +32,8 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig.proxyType = this.options.rtmpConfig.proxyType || 'none'
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
         this.options.rtmpConfig.autoSwitch = this.options.rtmpConfig.autoSwitch === undefined ? false : this.options.rtmpConfig.autoSwitch
+        this.options.rtmpConfig.switchRules = this.options.rtmpConfig.switchRules;
+
         this.addListeners()
         this._setupPlaybackType()
     }
@@ -160,6 +162,14 @@ export default class RTMP extends Flash {
         this.trigger(Events.PLAYBACK_SETTINGSUPDATE, this.name)
     }
 
+    get _switchRulesJSON() {
+        if (this.options.rtmpConfig.switchRules !== undefined) {
+            return JSON.stringify(this.options.rtmpConfig.switchRules).replace(/"/g, '&quot;')
+        }
+
+        return "";
+    }
+
     render() {
         this.$el.html(this.template({
             cid: this.cid,
@@ -171,6 +181,7 @@ export default class RTMP extends Flash {
             playbackType: this.options.rtmpConfig.playbackType,
             startLevel: this.options.rtmpConfig.startLevel,
             autoSwitch: this.options.rtmpConfig.autoSwitch,
+            switchRules: this._switchRulesJSON,
             useAppInstance: this.options.rtmpConfig.useAppInstance,
             proxyType: this.options.rtmpConfig.proxyType
         }))
