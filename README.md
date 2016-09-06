@@ -24,6 +24,23 @@ var player = new Clappr.Player({
         playbackType: 'live',
         bufferTime: 1,
         startLevel: 0,
+        switchRules: {
+            "SufficientBandwidthRule": {
+                "bandwidthSafetyMultiple": 1.15,
+                "minDroppedFps": 2
+            },
+            "InsufficientBufferRule": {
+                "minBufferLength": 2
+            },
+            "DroppedFramesRule": {
+                "downSwitchByOne": 10,
+                "downSwitchByTwo": 20,
+                "downSwitchToZero": 24
+            },
+            "InsufficientBandwidthRule": {
+                "bitrateMultiplier": 1.15
+            }
+        }
     },
 });
 ```
@@ -40,6 +57,7 @@ The plugin accepts several **optional** configuration options, such as:
   - `autoSwitch` (default **false**) - Whether video should autoSwitch quality
   - `useAppInstance` (default **false**) - Set it to `true` if your source url contains the app instance (not required if the app instance is `_definst_`).
   - `proxyType` (default **none**) - Determines which fallback methods are tried if an initial connection attempt to Flash Media Server fails.
+  - `switchRules` (default **system defined**) - Rules defined to autoSwitch video quality based in some conditions.
 
 ## Building
 
