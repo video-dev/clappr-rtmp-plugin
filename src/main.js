@@ -203,9 +203,7 @@ export default class RTMP extends Flash {
     _checkState() {
         super._checkState()
 
-        if (this.el.getState() === "PLAYING") {
-            this.trigger(Events.PLAYBACK_PLAY, this.name)
-        } else if (this.el.getState() === "ERROR") {
+        if (this.el.getState() === "ERROR") {
             this.trigger(Events.PLAYBACK_ERROR, this.name)
         }
     }
@@ -224,7 +222,7 @@ export default class RTMP extends Flash {
                 } else {
                     this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, this.options.rtmpConfig.startLevel)
                 }
-            }
+             }
         }
     }
 }
