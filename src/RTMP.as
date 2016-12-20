@@ -172,11 +172,9 @@ package {
       if (playbackState == "ENDED") {
         return;
       } else if (event.info.code == "NetStream.Buffer.Full") {
-        playbackState = "PLAYING";
-        _triggerEvent('statechanged');
+        _changeStateAndNotify('PLAYING');
       } else if (event.info.code == "NetStream.Buffer.Empty" || event.info.code == "NetStream.Seek.Notify") {
-        playbackState = "PLAYING_BUFFERING";
-        _triggerEvent('statechanged');
+        _changeStateAndNotify('PLAYING_BUFFERING');
       }
     }
 
@@ -241,26 +239,24 @@ package {
           addChild(mediaContainer);
           resize();
 
-          playbackState = "PLAYING_BUFFERING";
-          _triggerEvent('statechanged');
+          _changeStateAndNotify('PLAYING_BUFFERING')
           _triggerEvent('playbackready');
         } else {
           mediaPlayer.play();
+          _changeStateAndNotify('PLAYING')
         }
       } catch (err:Error) {
         debugLog('Catch error: ' + err.messsage);
-
-        playbackState = "ERROR";
-        _triggerEvent('statechanged');
+        _changeStateAndNotify('ERROR')
       }
     }
 
     private function onLevelSwitching(event:DynamicStreamEvent):void {
       if (event.switching) {
-        _triggerEvent("levelChanging");
+        _triggerEvent('levelChanging');
       }
       else {
-        _triggerEvent("levelChanged");
+        _triggerEvent('levelChanged');
       }
     }
 
@@ -270,8 +266,7 @@ package {
 
     private function playerPause():void {
       mediaPlayer.pause();
-
-      playbackState = "PAUSED";
+      _changeStateAndNotify('PAUSED')
     }
 
     private function playerSeek(seconds:Number):void {
@@ -280,7 +275,7 @@ package {
 
     private function playerStop():void {
       mediaPlayer.stop();
-      playbackState = "IDLE";
+      _changeStateAndNotify('IDLE')
     }
 
     private function playerVolume(level:Number):void {
@@ -372,8 +367,7 @@ package {
 
     private function onFinish(event:TimeEvent):void {
       mediaPlayer.stop();
-      playbackState = 'ENDED';
-      _triggerEvent('statechanged');
+      _changeStateAndNotify('ENDED')
     }
 
     protected function _onStageResize(event : Event) : void {
@@ -391,6 +385,11 @@ package {
           logger.info(msg);
         }
       }
+    }
+
+    private function _changeStateAndNotify(state: String):void {
+      playbackState = state;
+      _triggerEvent('statechanged');
     }
   }
 }
