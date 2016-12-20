@@ -222,7 +222,7 @@ export default class RTMP extends Flash {
                 } else {
                     this.trigger(Events.PLAYBACK_LEVELS_AVAILABLE, this.levels, this.options.rtmpConfig.startLevel)
                 }
-             }
+            }
         }
     }
 }
