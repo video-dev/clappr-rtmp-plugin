@@ -5,7 +5,7 @@
 import {Browser, Events, Flash, Mediator, Styler, UICorePlugin, template} from 'clappr'
 
 import flashHTML from '../public/flash.html'
-import flashStyle from '!raw!sass!../public/flash.scss'
+import flashStyle from '!raw-loader!sass-loader!../public/flash.scss'
 
 export default class RTMP extends Flash {
     get name() { return 'rtmp' }
