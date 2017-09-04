@@ -8,7 +8,7 @@ RTMP support for [Clappr player](http://github.com/globocom/clappr). Supports bo
 Import rtmp.min.js
 
 ```javascript
-<script type="text/javascript" src="http://cdn.jsdelivr.net/clappr.rtmp/latest/rtmp.min.js">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clappr-rtmp@latest/dist/rtmp.min.js">
 </script>
 ```
 and create Clappr Player adding the external plugin:
