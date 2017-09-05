@@ -1,0 +1,29 @@
+<param name="movie" value="<%= swfPath %>?inline=1">
+<param name="quality" value="autohigh">
+<param name="swliveconnect" value="true">
+<param name="allowScriptAccess" value="always">
+<param name="allownetworking" value="all">
+<param name="bgcolor" value="#000000">
+<param name="allowFullScreen" value="false">
+<param name="wmode" value="<%= wmode %>">
+<param name="tabindex" value="1">
+<param name=FlashVars value="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>&startLevel=<%= startLevel %>&useAppInstance=<%= useAppInstance %>&proxyType=<%= proxyType %>&autoSwitch=<%= autoSwitch %>&switchRules=<%= switchRules %>"/>
+<embed
+  name="<%= cid %>"
+  type="application/x-shockwave-flash"
+  disabled="disabled"
+  tabindex="-1"
+  enablecontextmenu="false"
+  allowScriptAccess="always"
+  allownetworking="all"
+  quality="autohigh"
+  pluginspage="http://www.macromedia.com/go/getflashplayer"
+  wmode="<%= wmode %>"
+  swliveconnect="true"
+  allowfullscreen="false"
+  bgcolor="#000000"
+  FlashVars="playbackId=<%= playbackId %>&scaling=<%= scaling %>&bufferTime=<%= bufferTime %>&playbackType=<%= playbackType %>&startLevel=<%= startLevel %>&useAppInstance=<%= useAppInstance %>&proxyType=<%= proxyType %>&autoSwitch=<%= autoSwitch %>&switchRules=<%= switchRules %>"
+  src="<%= swfPath %>"
+  width="100%"
+  height="100%">
+</embed>
