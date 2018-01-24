@@ -14,6 +14,7 @@ export default class RTMP extends Flash {
     get attributes() {
         return {
             'data-rtmp': '',
+            'data': this.swfPath,
             'type': 'application/x-shockwave-flash',
             'width': '100%',
             'height': '100%'
@@ -191,8 +192,6 @@ export default class RTMP extends Flash {
             if (Browser.isLegacyIE) {
                 this.$el.attr('classid', IE_CLASSID)
             }
-        } else if (Browser.isFirefox) {
-            this._setupFirefox()
         }
         this.el.id = this.cid
         var style = Styler.getStyleFor(flashStyle)
