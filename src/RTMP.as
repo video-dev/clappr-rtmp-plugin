@@ -384,12 +384,14 @@ package {
         if (logger != null) {
           logger.info(msg);
         }
+        ExternalInterface.call('ClapprRTMPLog("[debug] ' + msg + '")');
       }
     }
 
     private function _changeStateAndNotify(state: String):void {
       playbackState = state;
       _triggerEvent('statechanged');
+      ExternalInterface.call('ClapprRTMPLog("state changed to ' + state + '")');
     }
   }
 }
