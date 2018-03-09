@@ -66,6 +66,7 @@ package {
 
 
     public function RTMP() {
+      debugLog('constructor begin');
       Security.allowDomain('*');
       Security.allowInsecureDomain('*');
 
@@ -103,6 +104,7 @@ package {
       }
 
       stage.addEventListener(Event.RESIZE, resize);
+      debugLog('constructor end');
     }
 
     private function resize(e:Event = null):void {
@@ -162,18 +164,23 @@ package {
     }
 
     private function onLoaded(event:LoadEvent):void {
+      debugLog('onloaded');
       _triggerEvent("onloaded")
       netStream = netStreamLoadTrait.netStream;
       netStream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
       mediaPlayer.play();
+      debugLog('should be playing');
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
       if (playbackState == "ENDED") {
+        debugLog('network status suggests playback is over');
         return;
       } else if (event.info.code == "NetStream.Buffer.Full") {
+        debugLog('network status suggests playback buffer is ready');
         _changeStateAndNotify('PLAYING');
       } else if (event.info.code == "NetStream.Buffer.Empty" || event.info.code == "NetStream.Seek.Notify") {
+        debugLog('network status suggests playback is buffering');
         _changeStateAndNotify('PLAYING_BUFFERING');
       }
     }
@@ -380,11 +387,11 @@ package {
     }
 
     private function debugLog(msg:String):void {
+      ExternalInterface.call('ClapprRTMPLog("[debug] ' + msg + '")');
       CONFIG::LOGGING {
         if (logger != null) {
           logger.info(msg);
         }
-        ExternalInterface.call('ClapprRTMPLog("[debug] ' + msg + '")');
       }
     }
 
