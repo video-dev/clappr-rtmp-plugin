@@ -199,8 +199,10 @@ package {
     }
 
     private function playerPlay(url:String=null):void {
+      debugLog('player play: ' + url)
       try {
         if (!mediaElement) {
+          debugLog('media element does not exist, creating');
           var streamType:String = (isLive ? StreamType.LIVE : StreamType.RECORDED);
 
           urlResource = new StreamingURLResource(url, streamType, NaN, NaN, null, useAppInstance, null, proxyType);
@@ -248,7 +250,9 @@ package {
 
           _changeStateAndNotify('PLAYING_BUFFERING')
           _triggerEvent('playbackready');
+          debugLog('should be ready to start playing now')
         } else {
+          debugLog('media element already exists, playing');
           mediaPlayer.play();
           _changeStateAndNotify('PLAYING')
         }
@@ -383,7 +387,11 @@ package {
     }
 
     private function _triggerEvent(name: String):void {
-      ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+      try {
+        ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+      } catch (err:Error) {
+        debugLog('unable to trigger event: ' + err);
+      }
     }
 
     private function debugLog(msg:String):void {
@@ -398,7 +406,7 @@ package {
     private function _changeStateAndNotify(state: String):void {
       playbackState = state;
       _triggerEvent('statechanged');
-      ExternalInterface.call('ClapprRTMPLog("state changed to ' + state + '")');
+      debugLog('state changed to ' + state);
     }
   }
 }
