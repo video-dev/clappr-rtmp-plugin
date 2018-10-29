@@ -395,7 +395,7 @@ package {
     }
 
     private function debugLog(msg:String):void {
-      ExternalInterface.call('ClapprRTMPLog("[debug] ' + msg + '")');
+      ExternalInterface.call('ClapprRTMPLog("[debug] ' + msg.replace(/"/g, '&quot') + '")');
       CONFIG::LOGGING {
         if (logger != null) {
           logger.info(msg);
